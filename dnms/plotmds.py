@@ -23,13 +23,6 @@ if 1:
             #labellist.append([trialtype]*r.shape[0])
             labellist.append(trialtype)
 
-#single:    
-# not 3, not 4, not 5, maybe 6? not 7, not 8, not 9, not 10, not 11, not 12, not 13 (hmm.), not 14, not 15, 16?, not 17, not 18 (though close), not 19,  not 20
-# Least bad is 16    
-
-#singlealt:
-# Not 1, not 2, not 3(only 2 fuse), not 4, not 5, not 6 (only 2 fuse), not7 (all fuse!). not 8(presumably all fuse-fail), not 9, maybe 10?, not 11, not 12
-# not 13 (only 2 fuse), 14 ! , not 15 (fail), not 16,not 17,  18! 19! not 20.
 
 
 matdata = dstack(datalist) ; #+ .5  * standard_normal(matdata.shape) 
@@ -65,8 +58,9 @@ for numgraph in range(4):
     ax.plot(pos[2*NBPTS/4:3*NBPTS/4-1, 0], pos[2*NBPTS/4:3*NBPTS/4-1, 1], 'og', markersize=8)
     ax.plot(pos[3*NBPTS/4:NBPTS-1, 0], pos[3*NBPTS/4:NBPTS-1, 1], 'oy', markersize=8)
     if numgraph==0:
-        ax.set_xlabel('Dimension 1', size=10)
         ax.set_ylabel('Dimension 2', size=10)
+    if numgraph==2:
+        ax.set_xlabel('Dimension 1', size=10)
     ax.set_xticklabels([])
     ax.set_yticklabels([])
     ax.set_xlim(-10,10)

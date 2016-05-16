@@ -36,16 +36,16 @@ for nn in range(len(fnames)):
     # Doesn't work! :
     #ax.set_xticks([0, 20, 40, 60, 80, 110], ['0', '200', '400', '600', '800',  '1100'])
     #ax.set_xticks([0, 20, 40, 60, 80, 110])
-    ax.set_xticks([0, 20, 40, 60, 80, 100])
-    ax.set_xticklabels( ['0', '200', '400', '600', '800',  '1000'])
+    ax.set_xticks([0, 20, 40, 60, 70, 100])
+    ax.set_xticklabels( ['0', '200', '400', '600', '700',  '1000'], size=6)
 
     if nn==0:
         #ax.yaxis.set_ticks([0, 20, 40, 60, 80, 110])
-        ax.yaxis.set_ticks([0, 20, 40, 60, 80, 100])
-        ax.yaxis.set_ticklabels(['0', '200', '400', '600', '800',  '1000'])
+        ax.yaxis.set_ticks([0, 20, 40, 60, 70, 100])
+        ax.yaxis.set_ticklabels(['0', '200', '400', '600', '700',  '1000'])
         ax.set_ylabel('Training time (ms)', verticalalignment='bottom')
     else:
-        ax.yaxis.set_ticks([0, 20, 40, 60, 80, 100])
+        ax.yaxis.set_ticks([0, 20, 40, 60, 70, 100])
         ax.yaxis.set_ticklabels([])
     
     
@@ -63,7 +63,7 @@ for nn in range(len(fnames)):
     ax.add_patch(myrect2)
     myrect2.set_clip_on(False)
     #myrect3 = patches.Rectangle((80, 110), 30, 5, facecolor='gray', edgecolor='gray')
-    myrect3 = patches.Rectangle((80, -9), 20, 8.5, facecolor='#AAAAAA', edgecolor='#AAAAAA')
+    myrect3 = patches.Rectangle((70, -9), 30, 8.5, facecolor='#AAAAAA', edgecolor='#AAAAAA')
     ax.add_patch(myrect3)
     myrect3.set_clip_on(False)
 
@@ -71,7 +71,7 @@ for nn in range(len(fnames)):
    
     ax.text(0, -8.5, 'Stim. 1', size=6) 
     ax.text(40, -8.5, 'Stim. 2', size=6) 
-    ax.text(80, -8.5, 'Response', size=6) 
+    ax.text(75, -8.5, 'Response', size=6) 
     ax.set_title(titlez[nn], size=10)
     
 fgr.subplots_adjust(right=0.9)
