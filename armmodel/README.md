@@ -1,6 +1,6 @@
 This is the code for the arm-model experiment.
 
-In addition to the Eigen library, you will need to download and compile the Opensim 3.3 library (and its prerequisite, the SimBody library). You need the 3.3 version - it will not work with any other version. 
+In addition to the Eigen library, you will need to download and compile the [Opensim 3.3 library](https://simtk.org/frs/?group_id=91) (and its prerequisite, the SimBody library). You need the 3.3 version - it will not work with any other version. 
 
 Be warned: this is a major pain. 
 
