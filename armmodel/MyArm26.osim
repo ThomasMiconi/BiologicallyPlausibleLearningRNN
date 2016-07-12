@@ -1,0 +1,3057 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<OpenSimDocument Version="30000">
+	<Model name="arm26_optimize">
+    <defaults/>
+		<!--See the credits section below for information about this model's authors, data sources, intended uses, and more.
+		See the publications section for the paper(s) you should cite when using this model. Do not remove either section if you modify or add to this model.
+		If you are this model's author(s), add or update the credits and publications sections before distributing your model.-->
+        <credits>
+            Sources for this model: 
+
+      The OpenSim Development Team (Reinbolt, J; Seth, A; Habib, A; Hamner, S)'s Arm26 model, adapted from a model originally created by Kate Holzbaur (11/22/04)
+      the MoBL_ARMS_Upper_Limb_Model_OpenSim.osim model, which is also inspired by the Holzbaur model.
+      DynamicWalkingStarter/Model/WalkerModelTerrain.osim, for how to implement contact forces/geometries directly in the xml.
+
+      This model was enormously simplified and is NOT AT ALL SUITABLE FOR SERIOUS BIO-MECHANICAL SIMULATIONS. In particular:
+        - All bones are fixed except for the upper and lower arm (e.g. the clavicle and scapula are fixed).
+        - It does not include wrapping surfaces
+        - It uses muscle data from some models
+        - I had to incorporate data from various models in ad hoc manner. In particular, some muscle attachment points are HIGHLY IMPRECISE estimates (due to varying coordinate systems).
+
+      Do not use this model for anything else than testing a control method. Any conclusion about body behaviour derived from this model will almost certainly be wrong.
+
+    </credits>
+		<publications>.</publications>
+		<length_units>meters</length_units>
+		<force_units>N</force_units>
+		<!--Acceleration due to gravity.-->
+		<gravity> 0 -9.80665 0</gravity>
+		<!--Bodies in the model.-->
+		<BodySet>
+			<objects>
+				<Body name="ground">
+					<mass>0</mass>
+					<mass_center> 0 0 0</mass_center>
+					<inertia_xx>0</inertia_xx>
+					<inertia_yy>0</inertia_yy>
+					<inertia_zz>0</inertia_zz>
+					<inertia_xy>0</inertia_xy>
+					<inertia_xz>0</inertia_xz>
+					<inertia_yz>0</inertia_yz>
+					<!--Joint that connects this body with the parent body.-->
+					<Joint />
+					<VisibleObject>
+						<!--Set of geometry files and associated attributes, allow .vtp, .stl, .obj-->
+						<GeometrySet>
+							<objects>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>ground_ribs.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>ground_spine.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>ground_skull.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>ground_jaw.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>ground_r_clavicle.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>ground_r_scapula.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+							</objects>
+							<groups />
+						</GeometrySet>
+						<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+						<scale_factors> 1 1 1</scale_factors>
+						<!--transform relative to owner specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+						<transform> -0 0 -0 0 0 0</transform>
+						<!--Whether to show a coordinate frame-->
+						<show_axes>false</show_axes>
+						<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for individual geometries-->
+						<display_preference>4</display_preference>
+					</VisibleObject>
+
+                    <!--
+                    <WrapObjectSet name="">
+						<objects>
+							<WrapEllipsoid name="Thorax">
+								<xyz_body_rotation>       0.04345870      -0.33196162       0.18989182 </xyz_body_rotation>
+								<translation>      -0.03860000      -0.12730000       0.07090000 </translation>
+								<active> true </active>
+								<quadrant> all </quadrant>
+								<VisibleObject name="">
+									<GeometrySet name="">
+										<objects/>
+										<groups/>
+									</GeometrySet>
+									<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+									<transform>       0.04345870      -0.33196162       0.18989182      -0.03860000      -0.12730000       0.07090000 </transform>
+									<show_axes> false </show_axes>
+									<display_preference> 4 </display_preference>
+								</VisibleObject>
+								<dimensions>       0.10000000       0.13500000       0.08000000 </dimensions>
+							</WrapEllipsoid>
+						</objects>
+						<groups/>
+                    </WrapObjectSet>
+                    -->
+                </Body>
+
+				<Body name="clavicle">
+					<mass>       0.15600000 </mass>
+					<mass_center>      -0.01109600       0.00637230       0.05416800 </mass_center>
+					<inertia_xx>       0.00024259 </inertia_xx>
+					<inertia_yy>       0.00025526 </inertia_yy>
+					<inertia_zz>       0.00004442 </inertia_zz>
+					<inertia_xy>      -0.00001898 </inertia_xy>
+					<inertia_xz>      -0.00006994 </inertia_xz>
+					<inertia_yz>       0.00005371 </inertia_yz>
+					<!--Joint that connects this body with the parent body.-->
+					<Joint>
+                        <WeldJoint name="sternoclavicular">
+							<parent_body> ground </parent_body>
+							<location_in_parent>       0.00632500       0.00693000       0.02546500 </location_in_parent>
+							<orientation_in_parent>       0.00000000       0.00000000       0.00000000 </orientation_in_parent>
+							<location>       0.00000000       0.00000000       0.00000000 </location>
+							<orientation>       0.00000000       0.00000000       0.00000000 </orientation>
+						</WeldJoint>
+					</Joint>
+					<VisibleObject name="">
+						<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+						    .obj-->
+						<GeometrySet name="">
+							<objects>
+								<DisplayGeometry name="">
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file> clavicle.vtp </geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color>       1.00000000       1.00000000       1.00000000 </color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file>  </texture_file>
+									<!--in body transform specified as 3 rotations (rad) followed by 3
+									    translations rX rY rZ tx ty tz-->
+									<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference> 4 </display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>       1.00000000 </opacity>
+								</DisplayGeometry>
+							</objects>
+							<groups/>
+						</GeometrySet>
+						<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+						<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+						<!--transform relative to owner specified as 3 rotations (rad) followed by
+						    3 translations rX rY rZ tx ty tz-->
+						<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+						<!--Whether to show a coordinate frame-->
+						<show_axes> false </show_axes>
+						<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+						    individual geometries-->
+						<display_preference> 0 </display_preference>
+					</VisibleObject>
+					<WrapObjectSet name="">
+						<objects/>
+						<groups/>
+					</WrapObjectSet>
+				</Body>
+                
+                <Body name="scapula">
+					<mass>       0.70396000 </mass>
+					<mass_center>      -0.05469400      -0.03503200      -0.04373400 </mass_center>
+					<inertia_xx>       0.00124290 </inertia_xx>
+					<inertia_yy>       0.00115040 </inertia_yy>
+					<inertia_zz>       0.00136510 </inertia_zz>
+					<inertia_xy>       0.00044940 </inertia_xy>
+					<inertia_xz>       0.00040922 </inertia_xz>
+					<inertia_yz>       0.00024110 </inertia_yz>
+					<!--Joint that connects this body with the parent body.-->
+					<Joint>
+                        <WeldJoint name="acromioclavicular">
+                            <!-- In the original models scapula is linked to 'clavphant' (apparently a "helper" body connected to the clavicula). The 'location in parent' has all coords. 0, so I simply 
+                                connected the scapula to the clavicle with coordinates equal to those of clavphant in the original models.
+                                -->
+							<parent_body> clavicle </parent_body>
+							<location_in_parent>      -0.01433000       0.02007000       0.13553500 </location_in_parent>
+                            <!--<location_in_parent>       0.00000000       0.00000000       0.00000000 </location_in_parent>-->
+							<orientation_in_parent>       0.00000000       0.00000000       0.00000000 </orientation_in_parent>
+							<location>       0.00000000       0.00000000       0.00000000 </location>
+							<orientation>       0.00000000       0.00000000       0.00000000 </orientation>
+							<reverse> false </reverse>
+						</WeldJoint>
+					</Joint>
+					<VisibleObject name="">
+						<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+						    .obj-->
+						<GeometrySet name="">
+							<objects>
+								<DisplayGeometry name="">
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file> scapula.vtp </geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color>       1.00000000       1.00000000       1.00000000 </color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file>  </texture_file>
+									<!--in body transform specified as 3 rotations (rad) followed by 3
+									    translations rX rY rZ tx ty tz-->
+									<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference> 4 </display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>       1.00000000 </opacity>
+								</DisplayGeometry>
+							</objects>
+							<groups/>
+						</GeometrySet>
+						<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+						<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+						<!--transform relative to owner specified as 3 rotations (rad) followed by
+						    3 translations rX rY rZ tx ty tz-->
+						<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+						<!--Whether to show a coordinate frame-->
+						<show_axes> false </show_axes>
+						<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+						    individual geometries-->
+						<display_preference> 0 </display_preference>
+					</VisibleObject>
+				</Body>
+
+
+
+				<Body name="r_humerus">
+					<mass>1.864572</mass>
+					<mass_center> 0 -0.180496 0</mass_center>
+					<inertia_xx>0.01481</inertia_xx>
+					<inertia_yy>0.004551</inertia_yy>
+					<inertia_zz>0.013193</inertia_zz>
+					<inertia_xy>0</inertia_xy>
+					<inertia_xz>0</inertia_xz>
+					<inertia_yz>0</inertia_yz>
+					<!--Joint that connects this body with the parent body.-->
+					<Joint>
+						<CustomJoint name="r_shoulder">
+							<!--Name of the parent body to which this joint connects its owner body.-->
+							<parent_body>ground</parent_body>
+							<!--Location of the joint in the parent body specified in the parent reference frame. Default is (0,0,0).-->
+							<location_in_parent>-0.017545 -0.007 0.17</location_in_parent>
+							<!--Orientation of the joint in the parent body specified in the parent reference frame. Euler XYZ body-fixed rotation angles are used to express the orientation. Default is (0,0,0).-->
+							<orientation_in_parent>0 0 0</orientation_in_parent>
+							<!--Location of the joint in the child body specified in the child reference frame. For SIMM models, this vector is always the zero vector (i.e., the body reference frame coincides with the joint). -->
+							<location>0 0 0</location>
+							<!--Orientation of the joint in the owing body specified in the owning body reference frame.  Euler XYZ body-fixed rotation angles are used to express the orientation. -->
+							<orientation>0 0 0</orientation>
+							<!--Set holding the generalized coordinates (q's) that parmeterize this joint.-->
+							<CoordinateSet>
+								<objects>
+									<Coordinate name="r_shoulder_elev">
+										<!--Coordinate can describe rotational, translational, or coupled motion. Defaults to rotational.-->
+										<motion_type>rotational</motion_type>
+										<!--The value of this coordinate before any value has been set. Rotational coordinate value is in radians and Translational in meters.-->
+                                        <!-- <default_value>1.57079633</default_value> -->
+										<default_value>0.0</default_value>
+										<!--The speed value of this coordinate before any value has been set. Rotational coordinate value is in rad/s and Translational in m/s.-->
+                                        <default_speed_value>0</default_speed_value>
+
+                                        <!-- CLAMPING IS SIMPLY IGNORED ! I had to put a Coordinate Limit force further below. -->
+                                        <!--The minimum and maximum values that the coordinate can range between. Rotational coordinate range in radians and Translational in meters.-->
+                                        <!-- This is equal to -pi/2:pi = -90:180 degrees -->
+                                        <range>-1.57079633 3.14159265</range> 
+										<!--Flag indicating whether or not the values of the coordinates should be limited to the range, above.-->
+										<clamped>false</clamped>
+										<!--Flag indicating whether or not the values of the coordinates should be constrained to the current (e.g. default) value, above.-->
+										<locked>false</locked>
+										<!--If specified, the coordinate can be prescribed by a function of time. It can be any OpenSim Function with valid second order derivatives.-->
+										<prescribed_function />
+										<!--Flag indicating whether or not the values of the coordinates should be prescribed according to the function above. It is ignored if the no prescribed function is specified.-->
+										<prescribed>false</prescribed>
+                                    </Coordinate>
+
+                                    <!-- I added this to provide a second degree of freedom to the shoulder. The shoulder thus acts as a double-hinge, rather than a full 3-DoF ball-and-socket joint. -->
+									<Coordinate name="r_shoulder_angle">
+										<motion_type>rotational</motion_type>
+                                        
+                                        <default_value> 0 <!-- -1.5 - corresponds to arm extended away 'laterally' from body --></default_value>
+                                        <default_speed_value>0</default_speed_value>
+
+                                        <range>-3.14 0</range> 
+										<clamped>false</clamped>
+										<locked>false</locked>
+										<prescribed_function />
+										<prescribed>false</prescribed>
+                                    </Coordinate>
+
+                                    <!-- 3rd degree of freedom for shoulder -->
+									<Coordinate name="shoulder_rot">
+										<!--Cooridnate can describe rotational, translational, or coupled values.
+										    Defaults to rotational.-->
+										<motion_type> rotational </motion_type>
+										<default_value>       0.00000000 </default_value>
+										<default_speed_value>       0.00000000 </default_speed_value>
+										<initial_value>       0.00000000 </initial_value>
+                                        <range>      -1.57079633       0.34906585 </range>
+                                        <!-- -pi/2 to pi/9  = -90 to 20 degrees 
+                                             Those limits are NOT ENFORCED - I would need to add a coordinate limit force.
+                                             
+                                             -->
+
+										<clamped> false </clamped>
+										<locked> false </locked>
+										<prescribed_function/>
+									</Coordinate>
+
+
+								</objects>
+								<groups />
+							</CoordinateSet>
+							<!--Whether the joint transform defines parent->child or child->parent.-->
+							<reverse>false</reverse>
+							<!--Defines how the child body moves with respect to the parent as a function of the generalized coordinates.-->
+							<SpatialTransform>
+								<!--3 Axes for rotations are listed first.-->
+								<TransformAxis name="rotation1">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates> shoulder_rot  </coordinates>
+
+									<!--Rotation or translation axis for the transform.-->
+									<axis>0 1 0</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<LinearFunction>
+											<coefficients> 1 0</coefficients>
+										</LinearFunction>
+                                        <!-- <Constant>
+											<value>0</value>
+                                        </Constant>-->
+									</function>
+								</TransformAxis>
+								<TransformAxis name="rotation2">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates> r_shoulder_angle </coordinates>
+									<!--Rotation or translation axis for the transform.-->
+									<axis>1 0 0</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<LinearFunction>
+											<coefficients> 1 0</coefficients>
+										</LinearFunction>
+                                        <!-- <Constant>
+											<value>0</value>
+                                        </Constant>-->
+									</function>
+								</TransformAxis>
+								<TransformAxis name="rotation3">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates>r_shoulder_elev</coordinates>
+									<!--Rotation or translation axis for the transform.-->
+									<axis>-0.05889802 0.0023 0.99826136</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<LinearFunction>
+											<coefficients> 1 0</coefficients>
+										</LinearFunction>
+									</function>
+								</TransformAxis>
+								<!--3 Axes for translations are listed next.-->
+								<TransformAxis name="translation1">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates></coordinates>
+									<!--Rotation or translation axis for the transform.-->
+									<axis>1 0 0</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<Constant>
+											<value>0</value>
+										</Constant>
+									</function>
+								</TransformAxis>
+								<TransformAxis name="translation2">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates></coordinates>
+									<!--Rotation or translation axis for the transform.-->
+									<axis>0 1 0</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<Constant>
+											<value>0</value>
+										</Constant>
+									</function>
+								</TransformAxis>
+								<TransformAxis name="translation3">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates></coordinates>
+									<!--Rotation or translation axis for the transform.-->
+									<axis>0 0 1</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<Constant>
+											<value>0</value>
+										</Constant>
+									</function>
+								</TransformAxis>
+							</SpatialTransform>
+						</CustomJoint>
+					</Joint>
+					<VisibleObject>
+						<!--Set of geometry files and associated attributes, allow .vtp, .stl, .obj-->
+						<GeometrySet>
+							<objects>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_humerus.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+							</objects>
+							<groups />
+						</GeometrySet>
+						<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+						<scale_factors> 1 1 1</scale_factors>
+						<!--transform relative to owner specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+						<transform> -0 0 -0 0 0 0</transform>
+						<!--Whether to show a coordinate frame-->
+						<show_axes>false</show_axes>
+						<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for individual geometries-->
+						<display_preference>4</display_preference>
+					</VisibleObject>
+					<WrapObjectSet>
+						<objects />
+						<groups />
+					</WrapObjectSet>
+				</Body>
+				<Body name="r_ulna_radius_hand">
+					<mass>1.534315</mass>
+					<mass_center> 0 -0.181479 0</mass_center>
+					<inertia_xx>0.019281</inertia_xx>
+					<inertia_yy>0.001571</inertia_yy>
+					<inertia_zz>0.020062</inertia_zz>
+					<inertia_xy>0</inertia_xy>
+					<inertia_xz>0</inertia_xz>
+					<inertia_yz>0</inertia_yz>
+					<!--Joint that connects this body with the parent body.-->
+					<Joint>
+						<CustomJoint name="r_elbow">
+							<!--Name of the parent body to which this joint connects its owner body.-->
+							<parent_body>r_humerus</parent_body>
+							<!--Location of the joint in the parent body specified in the parent reference frame. Default is (0,0,0).-->
+							<location_in_parent>0.0061 -0.2904 -0.0123</location_in_parent>
+							<!--Orientation of the joint in the parent body specified in the parent reference frame. Euler XYZ body-fixed rotation angles are used to express the orientation. Default is (0,0,0).-->
+							<orientation_in_parent>0 0 0</orientation_in_parent>
+							<!--Location of the joint in the child body specified in the child reference frame. For SIMM models, this vector is always the zero vector (i.e., the body reference frame coincides with the joint). -->
+							<location>0 0 0</location>
+							<!--Orientation of the joint in the owing body specified in the owning body reference frame.  Euler XYZ body-fixed rotation angles are used to express the orientation. -->
+							<orientation>0 0 0</orientation>
+							<!--Set holding the generalized coordinates (q's) that parmeterize this joint.-->
+							<CoordinateSet>
+								<objects>
+									<Coordinate name="r_elbow_flex">
+										<!--Coordinate can describe rotational, translational, or coupled motion. Defaults to rotational.-->
+										<motion_type>rotational</motion_type>
+										<!--The value of this coordinate before any value has been set. Rotational coordinate value is in radians and Translational in meters.-->
+										<default_value>0</default_value>
+										<!--The speed value of this coordinate before any value has been set. Rotational coordinate value is in rad/s and Translational in m/s.-->
+										<default_speed_value>0</default_speed_value>
+                                        <!--The minimum and maximum values that the coordinate can range between. Rotational coordinate range in radians and Translational in meters.-->
+                                        <!-- This is equal to 0-130 deg -->
+										<range>0 2.26892803</range>
+										<!--Flag indicating whether or not the values of the coordinates should be limited to the range, above.-->
+										<clamped>false</clamped>
+										<!--Flag indicating whether or not the values of the coordinates should be constrained to the current (e.g. default) value, above.-->
+										<locked>false</locked>
+										<!--If specified, the coordinate can be prescribed by a function of time. It can be any OpenSim Function with valid second order derivatives.-->
+										<prescribed_function />
+										<!--Flag indicating whether or not the values of the coordinates should be prescribed according to the function above. It is ignored if the no prescribed function is specified.-->
+										<prescribed>false</prescribed>
+									</Coordinate>
+								</objects>
+								<groups />
+							</CoordinateSet>
+							<!--Whether the joint transform defines parent->child or child->parent.-->
+							<reverse>false</reverse>
+							<!--Defines how the child body moves with respect to the parent as a function of the generalized coordinates.-->
+							<SpatialTransform>
+								<!--3 Axes for rotations are listed first.-->
+								<TransformAxis name="rotation1">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates></coordinates>
+									<!--Rotation or translation axis for the transform.-->
+									<axis>1 0 0</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<Constant>
+											<value>0</value>
+										</Constant>
+									</function>
+								</TransformAxis>
+								<TransformAxis name="rotation2">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates></coordinates>
+									<!--Rotation or translation axis for the transform.-->
+									<axis>0 1 0</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<Constant>
+											<value>0</value>
+										</Constant>
+									</function>
+								</TransformAxis>
+								<TransformAxis name="rotation3">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates>r_elbow_flex</coordinates>
+									<!--Rotation or translation axis for the transform.-->
+									<axis>0.04940001 0.03660001 0.99810825</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<LinearFunction>
+											<coefficients> 1 0</coefficients>
+										</LinearFunction>
+									</function>
+								</TransformAxis>
+								<!--3 Axes for translations are listed next.-->
+								<TransformAxis name="translation1">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates></coordinates>
+									<!--Rotation or translation axis for the transform.-->
+									<axis>1 0 0</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<Constant>
+											<value>0</value>
+										</Constant>
+									</function>
+								</TransformAxis>
+								<TransformAxis name="translation2">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates></coordinates>
+									<!--Rotation or translation axis for the transform.-->
+									<axis>0 1 0</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<Constant>
+											<value>0</value>
+										</Constant>
+									</function>
+								</TransformAxis>
+								<TransformAxis name="translation3">
+									<!--Names of the coordinates that serve as the independent variables         of the transform function.-->
+									<coordinates></coordinates>
+									<!--Rotation or translation axis for the transform.-->
+									<axis>0 0 1</axis>
+									<!--Transform function of the generalized coordinates used to        represent the amount of transformation along a specified axis.-->
+									<function>
+										<Constant>
+											<value>0</value>
+										</Constant>
+									</function>
+								</TransformAxis>
+							</SpatialTransform>
+						</CustomJoint>
+					</Joint>
+					<VisibleObject>
+						<!--Set of geometry files and associated attributes, allow .vtp, .stl, .obj-->
+						<GeometrySet>
+							<objects>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_ulna.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_radius.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_lunate.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_scaphoid.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_pisiform.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_triquetrum.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_capitate.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_trapezium.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_trapezoid.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_hamate.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_1mc.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_2mc.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_3mc.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_4mc.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_5mc.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_thumbprox.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_thumbdist.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_2proxph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_2midph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_2distph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_3proxph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_3midph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_3distph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_4proxph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_4midph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_4distph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_5proxph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_5midph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+								<DisplayGeometry>
+									<!--Name of geometry file .vtp, .stl, .obj-->
+									<geometry_file>arm_r_5distph.vtp</geometry_file>
+									<!--Color used to display the geometry when visible-->
+									<color> 1 1 1</color>
+									<!--Name of texture file .jpg, .bmp-->
+									<texture_file />
+									<!--in body transform specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+									<transform> -0 0 -0 0 0 0</transform>
+									<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+									<scale_factors> 1 1 1</scale_factors>
+									<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+									<display_preference>4</display_preference>
+									<!--Display opacity between 0.0 and 1.0-->
+									<opacity>1</opacity>
+								</DisplayGeometry>
+							</objects>
+							<groups />
+						</GeometrySet>
+						<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+						<scale_factors> 1 1 1</scale_factors>
+						<!--transform relative to owner specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+						<transform> -0 0 -0 0 0 0</transform>
+						<!--Whether to show a coordinate frame-->
+						<show_axes>false</show_axes>
+						<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for individual geometries-->
+						<display_preference>4</display_preference>
+					</VisibleObject>
+					<WrapObjectSet>
+						<objects />
+						<groups />
+					</WrapObjectSet>
+				</Body>
+			</objects>
+			<groups />
+		</BodySet>
+		<!--Constraints in the model.-->
+		<ConstraintSet>
+			<objects />
+			<groups />
+		</ConstraintSet>
+		<!--Forces in the model.-->
+		<ForceSet>
+			<objects>
+				<Thelen2003Muscle name="TRIlong">
+					<!--Flag indicating whether the force is disabled or not. Disabled means that the force is not active in subsequent dynamics realizations.-->
+					<isDisabled>false</isDisabled>
+					<!--Minimum allowed value for control signal. Used primarily when solving for control values.-->
+					<min_control>0</min_control>
+					<!--Maximum allowed value for control signal. Used primarily when solving for control values.-->
+					<max_control>1</max_control>
+					<!--The set of points defining the path of the muscle.-->
+					<GeometryPath>
+						<PathPointSet>
+							<objects>
+								<PathPoint name="TRIlong-P1">
+									<location> -0.05365 -0.01373 0.14723</location>
+									<body>ground</body>
+								</PathPoint>
+								<PathPoint name="TRIlong-P2">
+									<location> -0.02714 -0.11441 -0.00664</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="TRIlong-P3">
+									<location> -0.03184 -0.22637 -0.01217</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="TRIlong-P4">
+									<location> -0.01743 -0.26757 -0.01208</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="TRIlong-P5">
+									<location> -0.0219 0.01046 -0.00078</location>
+									<body>r_ulna_radius_hand</body>
+								</PathPoint>
+							</objects>
+							<groups />
+						</PathPointSet>
+						<VisibleObject>
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl, .obj-->
+							<GeometrySet>
+								<objects />
+								<groups />
+							</GeometrySet>
+							<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+							<scale_factors> 1 1 1</scale_factors>
+							<!--transform relative to owner specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+							<transform> -0 0 -0 0 0 0</transform>
+							<!--Whether to show a coordinate frame-->
+							<show_axes>false</show_axes>
+							<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for individual geometries-->
+							<display_preference>4</display_preference>
+						</VisibleObject>
+						<PathWrapSet>
+							<objects />
+							<groups />
+						</PathWrapSet>
+					</GeometryPath>
+					<!--The maximum force this actuator can produce.-->
+					<optimal_force>1</optimal_force>
+					<!--Maximum isometric force that the fibers can generate-->
+					<max_isometric_force>798.52</max_isometric_force>
+					<!--Optimal length of the muscle fibers-->
+					<optimal_fiber_length>0.134</optimal_fiber_length>
+					<!--Resting length of the tendon-->
+					<tendon_slack_length>0.143</tendon_slack_length>
+					<!--Angle between tendon and fibers at optimal fiber length expressed in radians-->
+					<pennation_angle_at_optimal>0.20943951</pennation_angle_at_optimal>
+					<!--Maximum contraction velocity of the fibers, in optimal fiberlengths/second-->
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<!--time constant for ramping up muscle activation-->
+					<activation_time_constant>0.01</activation_time_constant>
+					<!--time constant for ramping down of muscle activation-->
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<!--tendon strain at maximum isometric muscle force-->
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<!--passive muscle strain at maximum isometric muscle force-->
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<!--shape factor for Gaussian active muscle force-length relationship-->
+					<KshapeActive>0.5</KshapeActive>
+					<!--exponential shape factor for passive force-length relationship-->
+					<KshapePassive>4</KshapePassive>
+					<!--force-velocity shape factor-->
+					<Af>0.3</Af>
+					<!--maximum normalized lengthening force-->
+					<Flen>1.8</Flen>
+                    <!-- Added from PEC muscle -->
+                    <damping>       0.01700000 </damping>
+				</Thelen2003Muscle>
+				<Thelen2003Muscle name="TRIlat">
+					<!--Flag indicating whether the force is disabled or not. Disabled means that the force is not active in subsequent dynamics realizations.-->
+					<isDisabled>false</isDisabled>
+					<!--Minimum allowed value for control signal. Used primarily when solving for control values.-->
+					<min_control>0</min_control>
+					<!--Maximum allowed value for control signal. Used primarily when solving for control values.-->
+					<max_control>1</max_control>
+					<!--The set of points defining the path of the muscle.-->
+					<GeometryPath>
+						<PathPointSet>
+							<objects>
+								<PathPoint name="TRIlat-P1">
+									<location> -0.00599 -0.12646 0.00428</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="TRIlat-P2">
+									<location> -0.02344 -0.14528 0.00928</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="TRIlat-P3">
+									<location> -0.03184 -0.22637 -0.01217</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="TRIlat-P4">
+									<location> -0.01743 -0.26757 -0.01208</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="TRIlat-P5">
+									<location> -0.0219 0.01046 -0.00078</location>
+									<body>r_ulna_radius_hand</body>
+								</PathPoint>
+							</objects>
+							<groups />
+						</PathPointSet>
+						<VisibleObject>
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl, .obj-->
+							<GeometrySet>
+								<objects />
+								<groups />
+							</GeometrySet>
+							<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+							<scale_factors> 1 1 1</scale_factors>
+							<!--transform relative to owner specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+							<transform> -0 0 -0 0 0 0</transform>
+							<!--Whether to show a coordinate frame-->
+							<show_axes>false</show_axes>
+							<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for individual geometries-->
+							<display_preference>4</display_preference>
+						</VisibleObject>
+						<PathWrapSet>
+							<objects />
+							<groups />
+						</PathWrapSet>
+					</GeometryPath>
+					<!--The maximum force this actuator can produce.-->
+					<optimal_force>1</optimal_force>
+					<!--Maximum isometric force that the fibers can generate-->
+					<max_isometric_force>624.3</max_isometric_force>
+					<!--Optimal length of the muscle fibers-->
+					<optimal_fiber_length>0.1138</optimal_fiber_length>
+					<!--Resting length of the tendon-->
+					<tendon_slack_length>0.098</tendon_slack_length>
+					<!--Angle between tendon and fibers at optimal fiber length expressed in radians-->
+					<pennation_angle_at_optimal>0.15707963</pennation_angle_at_optimal>
+					<!--Maximum contraction velocity of the fibers, in optimal fiberlengths/second-->
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<!--time constant for ramping up muscle activation-->
+					<activation_time_constant>0.01</activation_time_constant>
+					<!--time constant for ramping down of muscle activation-->
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<!--tendon strain at maximum isometric muscle force-->
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<!--passive muscle strain at maximum isometric muscle force-->
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<!--shape factor for Gaussian active muscle force-length relationship-->
+					<KshapeActive>0.5</KshapeActive>
+					<!--exponential shape factor for passive force-length relationship-->
+					<KshapePassive>4</KshapePassive>
+					<!--force-velocity shape factor-->
+					<Af>0.3</Af>
+					<!--maximum normalized lengthening force-->
+					<Flen>1.8</Flen>
+                    <!-- Added from PEC muscle -->
+                    <damping>       0.01700000 </damping>
+				</Thelen2003Muscle>
+				<Thelen2003Muscle name="TRImed">
+					<!--Flag indicating whether the force is disabled or not. Disabled means that the force is not active in subsequent dynamics realizations.-->
+					<isDisabled>false</isDisabled>
+					<!--Minimum allowed value for control signal. Used primarily when solving for control values.-->
+					<min_control>0</min_control>
+					<!--Maximum allowed value for control signal. Used primarily when solving for control values.-->
+					<max_control>1</max_control>
+					<!--The set of points defining the path of the muscle.-->
+					<GeometryPath>
+						<PathPointSet>
+							<objects>
+								<PathPoint name="TRImed-P1">
+									<location> -0.00838 -0.13695 -0.00906</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="TRImed-P2">
+									<location> -0.02601 -0.15139 -0.0108</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="TRImed-P3">
+									<location> -0.03184 -0.22637 -0.01217</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="TRImed-P4">
+									<location> -0.01743 -0.26757 -0.01208</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="TRImed-P5">
+									<location> -0.0219 0.01046 -0.00078</location>
+									<body>r_ulna_radius_hand</body>
+								</PathPoint>
+							</objects>
+							<groups />
+						</PathPointSet>
+						<VisibleObject>
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl, .obj-->
+							<GeometrySet>
+								<objects />
+								<groups />
+							</GeometrySet>
+							<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+							<scale_factors> 1 1 1</scale_factors>
+							<!--transform relative to owner specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+							<transform> -0 0 -0 0 0 0</transform>
+							<!--Whether to show a coordinate frame-->
+							<show_axes>false</show_axes>
+							<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for individual geometries-->
+							<display_preference>4</display_preference>
+						</VisibleObject>
+						<PathWrapSet>
+							<objects />
+							<groups />
+						</PathWrapSet>
+					</GeometryPath>
+					<!--The maximum force this actuator can produce.-->
+					<optimal_force>1</optimal_force>
+					<!--Maximum isometric force that the fibers can generate-->
+					<max_isometric_force>624.3</max_isometric_force>
+					<!--Optimal length of the muscle fibers-->
+					<optimal_fiber_length>0.1138</optimal_fiber_length>
+					<!--Resting length of the tendon-->
+					<tendon_slack_length>0.0908</tendon_slack_length>
+					<!--Angle between tendon and fibers at optimal fiber length expressed in radians-->
+					<pennation_angle_at_optimal>0.15707963</pennation_angle_at_optimal>
+					<!--Maximum contraction velocity of the fibers, in optimal fiberlengths/second-->
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<!--time constant for ramping up muscle activation-->
+					<activation_time_constant>0.01</activation_time_constant>
+					<!--time constant for ramping down of muscle activation-->
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<!--tendon strain at maximum isometric muscle force-->
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<!--passive muscle strain at maximum isometric muscle force-->
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<!--shape factor for Gaussian active muscle force-length relationship-->
+					<KshapeActive>0.5</KshapeActive>
+					<!--exponential shape factor for passive force-length relationship-->
+					<KshapePassive>4</KshapePassive>
+					<!--force-velocity shape factor-->
+					<Af>0.3</Af>
+					<!--maximum normalized lengthening force-->
+					<Flen>1.8</Flen>
+                    <!-- Added from PEC muscle -->
+                    <damping>       0.01700000 </damping>
+				</Thelen2003Muscle>
+				<Thelen2003Muscle name="BIClong">
+					<!--Flag indicating whether the force is disabled or not. Disabled means that the force is not active in subsequent dynamics realizations.-->
+					<isDisabled>false</isDisabled>
+					<!--Minimum allowed value for control signal. Used primarily when solving for control values.-->
+					<min_control>0</min_control>
+					<!--Maximum allowed value for control signal. Used primarily when solving for control values.-->
+					<max_control>1</max_control>
+					<!--The set of points defining the path of the muscle.-->
+					<GeometryPath>
+						<PathPointSet>
+							<objects>
+                                <PathPoint name="BIClong-P1">
+									<location> -0.039235 0.00347 0.14795</location>
+									<body>ground</body>
+								</PathPoint>
+								<PathPoint name="BIClong-P3">
+									<location> 0.02131 0.01793 0.01028</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="BIClong-P4">
+									<location> 0.02378 -0.00511 0.01201</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="BIClong-P5">
+									<location> 0.01345 -0.02827 0.00136</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="BIClong-P6">
+									<location> 0.01068 -0.07736 -0.00165</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="BIClong-P7">
+									<location> 0.01703 -0.12125 0.00024</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="BIClong-P8">
+									<location> 0.0228 -0.1754 -0.0063</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="BIClong-P9">
+									<location> 0.00751 -0.04839 0.02179</location>
+									<body>r_ulna_radius_hand</body>
+								</PathPoint>
+							</objects>
+							<groups />
+						</PathPointSet>
+						<VisibleObject>
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl, .obj-->
+							<GeometrySet>
+								<objects />
+								<groups />
+							</GeometrySet>
+							<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+							<scale_factors> 1 1 1</scale_factors>
+							<!--transform relative to owner specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+							<transform> -0 0 -0 0 0 0</transform>
+							<!--Whether to show a coordinate frame-->
+							<show_axes>false</show_axes>
+							<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for individual geometries-->
+							<display_preference>4</display_preference>
+						</VisibleObject>
+						<PathWrapSet>
+							<objects />
+							<groups />
+						</PathWrapSet>
+					</GeometryPath>
+					<!--The maximum force this actuator can produce.-->
+					<optimal_force>1</optimal_force>
+					<!--Maximum isometric force that the fibers can generate-->
+					<max_isometric_force>624.3</max_isometric_force>
+					<!--Optimal length of the muscle fibers-->
+					<optimal_fiber_length>0.1157</optimal_fiber_length>
+					<!--Resting length of the tendon-->
+					<tendon_slack_length>0.2723</tendon_slack_length>
+					<!--Angle between tendon and fibers at optimal fiber length expressed in radians-->
+					<pennation_angle_at_optimal>0</pennation_angle_at_optimal>
+					<!--Maximum contraction velocity of the fibers, in optimal fiberlengths/second-->
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<!--time constant for ramping up muscle activation-->
+					<activation_time_constant>0.01</activation_time_constant>
+					<!--time constant for ramping down of muscle activation-->
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<!--tendon strain at maximum isometric muscle force-->
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<!--passive muscle strain at maximum isometric muscle force-->
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<!--shape factor for Gaussian active muscle force-length relationship-->
+					<KshapeActive>0.5</KshapeActive>
+					<!--exponential shape factor for passive force-length relationship-->
+					<KshapePassive>4</KshapePassive>
+					<!--force-velocity shape factor-->
+					<Af>0.3</Af>
+					<!--maximum normalized lengthening force-->
+					<Flen>1.8</Flen>
+                    <!-- Added from PEC muscle -->
+                    <damping>       0.01700000 </damping>
+				</Thelen2003Muscle>
+				<Thelen2003Muscle name="BICshort">
+					<!--Flag indicating whether the force is disabled or not. Disabled means that the force is not active in subsequent dynamics realizations.-->
+					<isDisabled>false</isDisabled>
+					<!--Minimum allowed value for control signal. Used primarily when solving for control values.-->
+					<min_control>0</min_control>
+					<!--Maximum allowed value for control signal. Used primarily when solving for control values.-->
+					<max_control>1</max_control>
+					<!--The set of points defining the path of the muscle.-->
+					<GeometryPath>
+						<PathPointSet>
+							<objects>
+                                 <PathPoint name="BICshort-P1">
+									<location> 0.004675 -0.01231 0.13475</location>
+									<body>ground</body>
+								</PathPoint>
+								<PathPoint name="BICshort-P2">
+									<location> -0.007075 -0.04004 0.14507</location>
+									<body>ground</body>
+                                </PathPoint>
+								<PathPoint name="BICshort-P3">
+									<location> 0.01117 -0.07576 -0.01101</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="BICshort-P4">
+									<location> 0.01703 -0.12125 -0.01079</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="BICshort-P5">
+									<location> 0.0228 -0.1754 -0.0063</location>
+									<body>r_humerus</body>
+								</PathPoint>
+								<PathPoint name="BICshort-P6">
+									<location> 0.00751 -0.04839 0.02179</location>
+									<body>r_ulna_radius_hand</body>
+								</PathPoint>
+							</objects>
+							<groups />
+						</PathPointSet>
+						<VisibleObject>
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl, .obj-->
+							<GeometrySet>
+								<objects />
+								<groups />
+							</GeometrySet>
+							<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+							<scale_factors> 1 1 1</scale_factors>
+							<!--transform relative to owner specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+							<transform> -0 0 -0 0 0 0</transform>
+							<!--Whether to show a coordinate frame-->
+							<show_axes>false</show_axes>
+							<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for individual geometries-->
+							<display_preference>4</display_preference>
+						</VisibleObject>
+						<PathWrapSet>
+							<objects />
+							<groups />
+						</PathWrapSet>
+					</GeometryPath>
+                    
+                    <optimal_force>1</optimal_force>
+					<max_isometric_force>435.56</max_isometric_force>
+					<optimal_fiber_length>0.1321</optimal_fiber_length>
+					<tendon_slack_length>0.1923</tendon_slack_length>
+					<pennation_angle_at_optimal>0</pennation_angle_at_optimal>
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<activation_time_constant>0.01</activation_time_constant>
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<KshapeActive>0.5</KshapeActive>
+					<KshapePassive>4</KshapePassive>
+					<Af>0.3</Af>
+					<Flen>1.8</Flen>
+                    <!-- Added from PEC muscle -->
+                    <damping>       0.01700000 </damping>
+                </Thelen2003Muscle>
+
+				<Thelen2003Muscle name="BRA">
+					<!--Flag indicating whether the force is disabled or not. Disabled means that the force is not active in subsequent dynamics realizations.-->
+					<isDisabled>false</isDisabled>
+					<!--Minimum allowed value for control signal. Used primarily when solving for control values.-->
+					<min_control>0</min_control>
+					<!--Maximum allowed value for control signal. Used primarily when solving for control values.-->
+					<max_control>1</max_control>
+					<!--The set of points defining the path of the muscle.-->
+					<GeometryPath>
+						<PathPointSet>
+							<objects>
+								<PathPoint name="BRA-P1">
+									<location> 0.0068 -0.1739 -0.0036</location>
+									<body>r_humerus</body>
+								</PathPoint>
+                                <PathPoint name="BRA-P4">
+                                    <!-- THIS WAS MODIFIED ! Due to fact that here we use joined humerus-ulna-hand, not just ulna as in original models (modified values are pretty arbitrary) -->
+                                    <!-- <location> -0.0032 -0.0239 0.0009</location> -->
+                                    <!-- <location> 0.04 -0.06 0.002</location> This generates "saluting" pose -->
+                                    <!-- first coordinate seems to be 'front-back', second coordinate along the bone (up-down, negative down), third coord left-right (positive left) when looking at the skeleton with its arm hanging down -->
+                                    <!--<location> 0.03 -0.04 -0.002</location> -->
+
+                                    <location> 0.04 -0.06 0.002</location> 
+
+									<body>r_ulna_radius_hand</body>
+								</PathPoint>
+							</objects>
+							<groups />
+						</PathPointSet>
+						<VisibleObject>
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl, .obj-->
+							<GeometrySet>
+								<objects />
+								<groups />
+							</GeometrySet>
+							<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+							<scale_factors> 1 1 1</scale_factors>
+							<!--transform relative to owner specified as 3 rotations (rad) followed by 3 translations rX rY rZ tx ty tz-->
+							<transform> -0 0 -0 0 0 0</transform>
+							<!--Whether to show a coordinate frame-->
+							<show_axes>false</show_axes>
+							<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for individual geometries-->
+							<display_preference>4</display_preference>
+						</VisibleObject>
+						<PathWrapSet>
+							<objects />
+							<groups />
+						</PathWrapSet>
+					</GeometryPath>
+					<!--The maximum force this actuator can produce.-->
+					<optimal_force>1</optimal_force>
+					<!--Maximum isometric force that the fibers can generate-->
+					<max_isometric_force>987.26</max_isometric_force>
+					<!--Optimal length of the muscle fibers-->
+					<optimal_fiber_length>0.0858</optimal_fiber_length>
+					<!--Resting length of the tendon-->
+					<tendon_slack_length>0.0535</tendon_slack_length>
+					<!--Angle between tendon and fibers at optimal fiber length expressed in radians-->
+					<pennation_angle_at_optimal>0</pennation_angle_at_optimal>
+					<!--Maximum contraction velocity of the fibers, in optimal fiberlengths/second-->
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<!--time constant for ramping up muscle activation-->
+					<activation_time_constant>0.01</activation_time_constant>
+					<!--time constant for ramping down of muscle activation-->
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<!--tendon strain at maximum isometric muscle force-->
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<!--passive muscle strain at maximum isometric muscle force-->
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<!--shape factor for Gaussian active muscle force-length relationship-->
+					<KshapeActive>0.5</KshapeActive>
+					<!--exponential shape factor for passive force-length relationship-->
+					<KshapePassive>4</KshapePassive>
+					<!--force-velocity shape factor-->
+					<Af>0.3</Af>
+					<!--maximum normalized lengthening force-->
+                    <Flen>1.8</Flen>
+
+                    <!-- Added from PEC muscle -->
+                    <damping>       0.01700000 </damping>
+				</Thelen2003Muscle>
+
+
+                
+                <Thelen2003Muscle name="PECM1">
+
+					<isDisabled> false </isDisabled>
+					<min_control>       0.00000000 </min_control>
+					<max_control>       1.00000000 </max_control>
+					<GeometryPath name="">
+						<PathPointSet name="">
+							<objects>
+								<PathPoint name="PECM1-P1">
+									<location>       0.01169000      -0.04191000       0.00780000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+								</PathPoint>
+								<PathPoint name="default">
+									<location>       0.01811667      -0.03355000      -0.00097000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+								</PathPoint>
+								<PathPoint name="default">
+									<location>      -0.00485333       0.00511000       0.11190667 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> ground </body>
+								</PathPoint>
+                                 <PathPoint name="PECM1-P2">
+									<location>       0.00321000      -0.00013000       0.05113000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> clavicle </body>
+                                </PathPoint>
+
+							</objects>
+							<groups/>
+						</PathPointSet>
+						<VisibleObject name="">
+							<GeometrySet name="">
+								<objects/>
+								<groups/>
+							</GeometrySet>
+							<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+							<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+							<show_axes> false </show_axes>
+							<display_preference> 4 </display_preference>
+						</VisibleObject>
+                    </GeometryPath>
+
+
+                    <!-- Values for the Thelen muscle, taken from BRA muscle . NOTE: Several of these values are overriden just below - the overriding values are from the MoBL model Schutte model for this muscle and are correct. --> 
+					<!--The maximum force this actuator can produce.-->
+					<optimal_force>1</optimal_force>
+                    <!-- <max_isometric_force>987.26</max_isometric_force>
+					<optimal_fiber_length>0.0858</optimal_fiber_length>
+					<tendon_slack_length>0.0535</tendon_slack_length>
+                    <pennation_angle_at_optimal>0</pennation_angle_at_optimal>-->
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<activation_time_constant>0.01</activation_time_constant>
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<KshapeActive>0.5</KshapeActive>
+					<KshapePassive>4</KshapePassive>
+					<Af>0.3</Af>
+					<Flen>1.8</Flen>
+
+
+					<time_scale>       0.10000000 </time_scale>
+					<activation1>       7.66700000 </activation1>
+					<activation2>       1.45985400 </activation2>
+					<max_isometric_force>     444.30000000 </max_isometric_force>
+					<optimal_fiber_length>       0.14420000 </optimal_fiber_length>
+					<tendon_slack_length>       0.00280000 </tendon_slack_length>
+					<pennation_angle_at_optimal>       0.29670597 </pennation_angle_at_optimal>
+                    <damping>       0.01700000 </damping>
+                    <!-- <max_contraction_velocity>       0.00000000 </max_contraction_velocity>
+
+					<tendon_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -10.00000000      -0.00200000      -0.00100000       0.00000000       0.00131000       0.00281000       0.00431000       0.00581000       0.00731000       0.00881000       0.01030000       0.01180000       0.01230000       9.20000000       9.20100000       9.20200000      20.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.01080000       0.02570000       0.04350000       0.06520000       0.09150000       0.12300000       0.16100000       0.20800000       0.22700000     345.00000000     345.00000000     345.00000000     345.00000000 </y>
+						</NaturalCubicSpline>
+					</tendon_force_length_curve>
+					<active_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -35.00000000       0.00000000       0.40100000       0.40200000       0.40350000       0.52725000       0.62875000       0.71875000       0.86125000       1.04500000       1.21750000       1.43875000       1.61875000       1.62000000       1.62100000       2.20000000      35.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.22666700       0.63666700       0.85666700       0.95000000       0.99333300       0.77000000       0.24666700       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000 </y>
+						</NaturalCubicSpline>
+					</active_force_length_curve>
+					<passive_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -35.00000000       1.00000000       1.05000000       1.10000000       1.12500000       1.14000000       1.14500000       1.15000000       1.15000000       1.25000000       1.35000000       1.45000000       1.55000000       1.65000000       1.75000000       1.75010000       1.75020000      35.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.03500000       0.12000000       0.26000000       0.55000000       1.17000000       2.00000000       2.00000000       2.00000000       2.00000000 </y>
+						</NaturalCubicSpline>
+                    </passive_force_length_curve>
+                    -->
+                </Thelen2003Muscle>
+                    <!-- </Thelen2003Muscle> -->
+
+
+
+                <!--<Thelen2003Muscle name="PECM2">-->
+                    <Thelen2003Muscle name="PECM2">
+                        <!-- Hmm, adding this muscle brings simulation time from 5s to 20s?? -->
+					<isDisabled> false </isDisabled>
+					<!--Minimum allowed value for control signal. Used primarily when solving
+					    for control values-->
+					<min_control>       0.00000000 </min_control>
+					<!--Maximum allowed value for control signal. Used primarily when solving
+					    for control values-->
+					<max_control>       1.00000000 </max_control>
+					<GeometryPath name="">
+						<PathPointSet name="">
+							<objects>
+								<PathPoint name="PECM2-P1">
+									<location>       0.01274000      -0.04289000       0.00785000 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+                                </PathPoint>
+								<PathPoint name="PECM2-P1b">
+									<location>       0.01649667      -0.03878000      -0.00207000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+                                </PathPoint>
+								<PathPoint name="PECM2-P1c">
+									<location>       0.02061333      -0.02625000       0.12066667 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> ground </body>
+                                </PathPoint>
+								<PathPoint name="PECM2-P4">
+									<location>       0.03091000      -0.03522000       0.09705000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> ground </body>
+								</PathPoint>
+								<PathPoint name="PECM2-P5">
+									<location>       0.02769000      -0.04498000       0.02271000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> ground </body>
+                                </PathPoint>  
+							</objects>
+							<groups/>
+						</PathPointSet>
+						<VisibleObject name="">
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+							    .obj-->
+							<GeometrySet name="">
+								<objects/>
+								<groups/>
+							</GeometrySet>
+							<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+							<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+							<show_axes> false </show_axes>
+							<display_preference> 4 </display_preference>
+						</VisibleObject>
+					</GeometryPath>
+                    
+                    <!-- Values for the Thelen muscle, taken from BRA muscle . NOTE: Several of these values are overriden just below - the overriding values are from the MoBL model Schutte model for this muscle and are correct. --> 
+					<!--The maximum force this actuator can produce.-->
+					<optimal_force>1</optimal_force>
+                    <!-- <max_isometric_force>987.26</max_isometric_force>
+					<optimal_fiber_length>0.0858</optimal_fiber_length>
+					<tendon_slack_length>0.0535</tendon_slack_length>
+                    <pennation_angle_at_optimal>0</pennation_angle_at_optimal>  -->
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<activation_time_constant>0.01</activation_time_constant>
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<KshapeActive>0.5</KshapeActive>
+					<KshapePassive>4</KshapePassive>
+					<Af>0.3</Af>
+					<Flen>1.8</Flen>
+                    
+                    
+                    
+                    <time_scale>       0.10000000 </time_scale>
+					<activation1>       7.66700000 </activation1>
+					<activation2>       1.45985400 </activation2>
+					<max_isometric_force>     658.30000000 </max_isometric_force>
+					<optimal_fiber_length>       0.13850000 </optimal_fiber_length>
+					<tendon_slack_length>       0.08900000 </tendon_slack_length>
+                    <pennation_angle_at_optimal>       0.45378560 </pennation_angle_at_optimal>
+					<damping>       0.01700000 </damping>
+                    <!--
+					<max_contraction_velocity>       0.00000000 </max_contraction_velocity>
+					<tendon_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -10.00000000      -0.00200000      -0.00100000       0.00000000       0.00131000       0.00281000       0.00431000       0.00581000       0.00731000       0.00881000       0.01030000       0.01180000       0.01230000       9.20000000       9.20100000       9.20200000      20.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.01080000       0.02570000       0.04350000       0.06520000       0.09150000       0.12300000       0.16100000       0.20800000       0.22700000     345.00000000     345.00000000     345.00000000     345.00000000 </y>
+						</NaturalCubicSpline>
+					</tendon_force_length_curve>
+					<active_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -35.00000000       0.00000000       0.40100000       0.40200000       0.40350000       0.52725000       0.62875000       0.71875000       0.86125000       1.04500000       1.21750000       1.43875000       1.61875000       1.62000000       1.62100000       2.20000000      35.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.22666700       0.63666700       0.85666700       0.95000000       0.99333300       0.77000000       0.24666700       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000 </y>
+						</NaturalCubicSpline>
+					</active_force_length_curve>
+					<passive_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -35.00000000       1.00000000       1.05000000       1.10000000       1.12500000       1.14000000       1.14500000       1.15000000       1.15000000       1.25000000       1.35000000       1.45000000       1.55000000       1.65000000       1.75000000       1.75010000       1.75020000      35.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.03500000       0.12000000       0.26000000       0.55000000       1.17000000       2.00000000       2.00000000       2.00000000       2.00000000 </y>
+						</NaturalCubicSpline>
+					</passive_force_length_curve>
+                    --> 
+                    <!--</Thelen2003Muscle>-->
+            </Thelen2003Muscle>
+
+
+
+            <!--<Thelen2003Muscle name="PECM3">-->
+				<Thelen2003Muscle name="PECM3">
+					<isDisabled> false </isDisabled>
+					<min_control>       0.00000000 </min_control>
+					<max_control>       1.00000000 </max_control>
+					<GeometryPath name="">
+						<PathPointSet name="">
+							<objects>
+								<PathPoint name="PECM3-P1">
+									<location>       0.01269000      -0.04375000       0.00750000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+								</PathPoint>
+								<PathPoint name="default">
+									<location>       0.01571552      -0.04373433      -0.00392883 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+								</PathPoint>
+								<PathPoint name="default">
+									<location>       0.02984000      -0.06289387       0.11343333 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> ground </body>
+								</PathPoint>
+								<PathPoint name="PECM3-P4">
+									<location>       0.05250000      -0.08417000       0.08935000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> ground </body>
+								</PathPoint>
+								<PathPoint name="PECM3-P5">
+									<location>       0.05724000      -0.11654000       0.03787000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> ground </body>
+								</PathPoint>
+							</objects>
+							<groups/>
+						</PathPointSet>
+						<VisibleObject name="">
+							<GeometrySet name="">
+								<objects/>
+								<groups/>
+							</GeometrySet>
+							<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+							<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+							<show_axes> false </show_axes>
+							<display_preference> 4 </display_preference>
+						</VisibleObject>
+					</GeometryPath>
+                    
+                    <!-- Values for the Thelen muscle, taken from BRA muscle . NOTE: Several of these values are overriden just below - the overriding values are from the MoBL model Schutte model for this muscle and are correct. --> 
+                    <optimal_force>1</optimal_force>
+                    <!-- Not commenting-out these lines bring simulation time from 5s to 30s...! -->
+                    <!-- <max_isometric_force>987.26</max_isometric_force>
+					<optimal_fiber_length>0.0858</optimal_fiber_length>
+					<tendon_slack_length>0.0535</tendon_slack_length>
+                    <pennation_angle_at_optimal>0</pennation_angle_at_optimal>  -->
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<activation_time_constant>0.01</activation_time_constant>
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<KshapeActive>0.5</KshapeActive>
+					<KshapePassive>4</KshapePassive>
+					<Af>0.3</Af>
+					<Flen>1.8</Flen>
+                    
+                    
+                    
+                    <time_scale>       0.10000000 </time_scale>
+					<activation1>       7.66700000 </activation1>
+					<activation2>       1.45985400 </activation2>
+					<max_isometric_force>     498.10000000 </max_isometric_force>
+					<optimal_fiber_length>       0.13850000 </optimal_fiber_length>
+					<tendon_slack_length>       0.13200000 </tendon_slack_length>
+					<pennation_angle_at_optimal>       0.43633231 </pennation_angle_at_optimal>
+					<damping>       0.01700000 </damping>
+                    <!-- <max_contraction_velocity>       0.00000000 </max_contraction_velocity>
+					<tendon_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -10.00000000      -0.00200000      -0.00100000       0.00000000       0.00131000       0.00281000       0.00431000       0.00581000       0.00731000       0.00881000       0.01030000       0.01180000       0.01230000       9.20000000       9.20100000       9.20200000      20.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.01080000       0.02570000       0.04350000       0.06520000       0.09150000       0.12300000       0.16100000       0.20800000       0.22700000     345.00000000     345.00000000     345.00000000     345.00000000 </y>
+						</NaturalCubicSpline>
+					</tendon_force_length_curve>
+					<active_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -35.00000000       0.00000000       0.40100000       0.40200000       0.40350000       0.52725000       0.62875000       0.71875000       0.86125000       1.04500000       1.21750000       1.43875000       1.61875000       1.62000000       1.62100000       2.20000000      35.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.22666700       0.63666700       0.85666700       0.95000000       0.99333300       0.77000000       0.24666700       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000 </y>
+						</NaturalCubicSpline>
+					</active_force_length_curve>
+					<passive_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -35.00000000       1.00000000       1.05000000       1.10000000       1.12500000       1.14000000       1.14500000       1.15000000       1.15000000       1.25000000       1.35000000       1.45000000       1.55000000       1.65000000       1.75000000       1.75010000       1.75020000      35.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.03500000       0.12000000       0.26000000       0.55000000       1.17000000       2.00000000       2.00000000       2.00000000       2.00000000 </y>
+						</NaturalCubicSpline>
+                    </passive_force_length_curve> -->
+                    <!-- </Thelen2003Muscle> -->
+                    </Thelen2003Muscle>  
+
+
+
+				<Thelen2003Muscle name="DELT1">
+					<isDisabled> false </isDisabled>
+					<!--Minimum allowed value for control signal. Used primarily when solving
+					    for control values-->
+					<min_control>       0.00000000 </min_control>
+					<!--Maximum allowed value for control signal. Used primarily when solving
+					    for control values-->
+					<max_control>       1.00000000 </max_control>
+					<GeometryPath name="">
+						<PathPointSet name="">
+							<objects>
+								<PathPoint name="DELT1-P1">
+									<location>       0.00896000      -0.11883000       0.00585000 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+								</PathPoint>
+								<PathPoint name="DELT1-P2">
+									<location>       0.01623000      -0.11033000       0.00412000 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body>r_humerus </body>
+                                </PathPoint>
+                                <!--  Commented out because no scapula in this model... -->
+								<PathPoint name="DELT1-P3">
+									<location>       0.04347000      -0.03202000       0.00139000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> scapula </body>
+                                </PathPoint> 
+
+								<PathPoint name="DELT1-P4">
+									<location>      -0.01400000       0.01106000       0.08021000 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> clavicle </body>
+								</PathPoint>
+							</objects>
+							<groups/>
+						</PathPointSet>
+						<VisibleObject name="">
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+							    .obj-->
+							<GeometrySet name="">
+								<objects/>
+								<groups/>
+							</GeometrySet>
+							<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+							<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+							<!--transform relative to owner specified as 3 rotations (rad) followed by
+							    3 translations rX rY rZ tx ty tz-->
+							<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+							<!--Whether to show a coordinate frame-->
+							<show_axes> false </show_axes>
+							<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+							    individual geometries-->
+							<display_preference> 4 </display_preference>
+						</VisibleObject>
+					</GeometryPath>
+                    
+                    
+                    <optimal_force>1</optimal_force>
+                    <!-- Not commenting-out these lines bring simulation time from 5s to 30s...! -->
+                    <!-- <max_isometric_force>987.26</max_isometric_force>
+					<optimal_fiber_length>0.0858</optimal_fiber_length>
+					<tendon_slack_length>0.0535</tendon_slack_length>
+                    <pennation_angle_at_optimal>0</pennation_angle_at_optimal>  -->
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<activation_time_constant>0.01</activation_time_constant>
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<KshapeActive>0.5</KshapeActive>
+					<KshapePassive>4</KshapePassive>
+					<Af>0.3</Af>
+					<Flen>1.8</Flen>
+                    
+                    
+                    <time_scale>       0.10000000 </time_scale>
+					<activation1>       7.66700000 </activation1>
+					<activation2>       1.45985400 </activation2>
+					<max_isometric_force>    1218.90000000 </max_isometric_force>
+					<optimal_fiber_length>       0.09760000 </optimal_fiber_length>
+					<tendon_slack_length>       0.09700000 </tendon_slack_length>
+                    <pennation_angle_at_optimal>       0.38397244 </pennation_angle_at_optimal>
+					<damping>       0.01700000 </damping>
+                    <!-- <max_contraction_velocity>       0.00000000 </max_contraction_velocity>
+					<tendon_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -10.00000000      -0.00200000      -0.00100000       0.00000000       0.00131000       0.00281000       0.00431000       0.00581000       0.00731000       0.00881000       0.01030000       0.01180000       0.01230000       9.20000000       9.20100000       9.20200000      20.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.01080000       0.02570000       0.04350000       0.06520000       0.09150000       0.12300000       0.16100000       0.20800000       0.22700000     345.00000000     345.00000000     345.00000000     345.00000000 </y>
+						</NaturalCubicSpline>
+					</tendon_force_length_curve>
+					<active_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -35.00000000       0.00000000       0.40100000       0.40200000       0.40350000       0.52725000       0.62875000       0.71875000       0.86125000       1.04500000       1.21750000       1.43875000       1.61875000       1.62000000       1.62100000       2.20000000      35.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.22666700       0.63666700       0.85666700       0.95000000       0.99333300       0.77000000       0.24666700       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000 </y>
+						</NaturalCubicSpline>
+					</active_force_length_curve>
+					<passive_force_length_curve>
+						<NaturalCubicSpline name="">
+							<x>     -35.00000000       1.00000000       1.05000000       1.10000000       1.12500000       1.14000000       1.14500000       1.15000000       1.15000000       1.25000000       1.35000000       1.45000000       1.55000000       1.65000000       1.75000000       1.75010000       1.75020000      35.00000000 </x>
+							<y>       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.00000000       0.03500000       0.12000000       0.26000000       0.55000000       1.17000000       2.00000000       2.00000000       2.00000000       2.00000000 </y>
+						</NaturalCubicSpline>
+                    </passive_force_length_curve>
+                    -->
+                </Thelen2003Muscle>
+
+				<Thelen2003Muscle name="DELT2">
+					<isDisabled> false </isDisabled>
+					<!--Minimum allowed value for control signal. Used primarily when solving
+					    for control values-->
+					<min_control>       0.00000000 </min_control>
+					<!--Maximum allowed value for control signal. Used primarily when solving
+					    for control values-->
+					<max_control>       1.00000000 </max_control>
+					<GeometryPath name="">
+						<PathPointSet name="">
+							<objects>
+								<PathPoint name="DELT2-P1">
+									<location>       0.00461000      -0.13611000       0.00560000 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+                                </PathPoint>
+                                <!-- This attachment point is on a thoracic bone (?) which we don't model, so we don't include it.
+								<MovingPathPoint name="DELT2-P2">
+									<location>       0.00197455      -0.03358350       0.03583725 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> DELT2pt2a </body>
+									<x_location>
+										<NaturalCubicSpline name="">
+											<x>      -1.57079633       0.34906585 </x>
+											<y>       0.03804000      -0.00604000 </y>
+										</NaturalCubicSpline>
+									</x_location>
+									<x_coordinate> shoulder_rot </x_coordinate>
+									<y_location>
+										<NaturalCubicSpline name="">
+											<x>      -1.57079633      -0.76136296       0.34906585 </x>
+											<y>      -0.04190000      -0.03910000      -0.03012000 </y>
+										</NaturalCubicSpline>
+									</y_location>
+									<y_coordinate> shoulder_rot </y_coordinate>
+									<z_location>
+										<NaturalCubicSpline name="">
+											<x>      -1.57079633      -0.85124776       0.34906585 </x>
+											<y>       0.00208000       0.02030267       0.04032000 </y>
+										</NaturalCubicSpline>
+									</z_location>
+									<z_coordinate> shoulder_rot </z_coordinate>
+                                </MovingPathPoint>
+                                -->
+								<PathPoint name="DELT2-P3">
+									<location>       0.00005000       0.00294000       0.02233000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> scapula </body>
+								</PathPoint>
+								<PathPoint name="DELT2-P4">
+									<location>      -0.01078000      -0.00034000       0.00620000 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> scapula </body>
+								</PathPoint>
+							</objects>
+							<groups/>
+						</PathPointSet>
+						<VisibleObject name="">
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+							    .obj-->
+							<GeometrySet name="">
+								<objects/>
+								<groups/>
+							</GeometrySet>
+							<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+							<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+							<!--transform relative to owner specified as 3 rotations (rad) followed by
+							    3 translations rX rY rZ tx ty tz-->
+							<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+							<!--Whether to show a coordinate frame-->
+							<show_axes> false </show_axes>
+							<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+							    individual geometries-->
+							<display_preference> 4 </display_preference>
+						</VisibleObject>
+					</GeometryPath>
+                    
+                    <optimal_force>1</optimal_force>
+                    <!-- Not commenting-out these lines bring simulation time from 5s to 30s...! -->
+                    <!-- <max_isometric_force>987.26</max_isometric_force>
+					<optimal_fiber_length>0.0858</optimal_fiber_length>
+					<tendon_slack_length>0.0535</tendon_slack_length>
+                    <pennation_angle_at_optimal>0</pennation_angle_at_optimal>  -->
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<activation_time_constant>0.01</activation_time_constant>
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<KshapeActive>0.5</KshapeActive>
+					<KshapePassive>4</KshapePassive>
+					<Af>0.3</Af>
+					<Flen>1.8</Flen>
+                    
+                    <time_scale>       0.10000000 </time_scale>
+					<activation1>       7.66700000 </activation1>
+					<activation2>       1.45985400 </activation2>
+					<max_isometric_force>    1103.50000000 </max_isometric_force>
+					<optimal_fiber_length>       0.10780000 </optimal_fiber_length>
+					<tendon_slack_length>       0.10950000 </tendon_slack_length>
+					<pennation_angle_at_optimal>       0.26179939 </pennation_angle_at_optimal>
+					<damping>       0.01700000 </damping>
+					
+				</Thelen2003Muscle>
+
+				<Thelen2003Muscle name="DELT3">
+					<isDisabled> false </isDisabled>
+					<min_control>       0.00000000 </min_control>
+					<max_control>       1.00000000 </max_control>
+					<GeometryPath name="">
+						<PathPointSet name="">
+							<objects>
+								<PathPoint name="DELT3-P1">
+									<location>      -0.05573000       0.00122000      -0.02512000 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> scapula </body>
+								</PathPoint>
+								<PathPoint name="DELT3-P2">
+									<location>      -0.07247000      -0.03285000       0.01233000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> scapula </body>
+								</PathPoint>
+								<PathPoint name="DELT3-P3">
+									<location>       0.00206000      -0.07602000       0.01045000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+								</PathPoint>
+							</objects>
+							<groups/>
+						</PathPointSet>
+						<VisibleObject name="">
+							<GeometrySet name="">
+								<objects/>
+								<groups/>
+							</GeometrySet>
+							<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+							<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+							<show_axes> false </show_axes>
+							<display_preference> 4 </display_preference>
+						</VisibleObject>
+					</GeometryPath>
+                    
+                    <optimal_force>1</optimal_force>
+					<max_contraction_velocity>10</max_contraction_velocity>
+					<activation_time_constant>0.01</activation_time_constant>
+					<deactivation_time_constant>0.04</deactivation_time_constant>
+					<FmaxTendonStrain>0.033</FmaxTendonStrain>
+					<FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+					<KshapeActive>0.5</KshapeActive>
+					<KshapePassive>4</KshapePassive>
+					<Af>0.3</Af>
+					<Flen>1.8</Flen>
+                    
+                
+					<time_scale>       0.10000000 </time_scale>
+					<activation1>       7.66700000 </activation1>
+					<activation2>       1.45985400 </activation2>
+					<max_isometric_force>     201.60000000 </max_isometric_force>
+					<optimal_fiber_length>       0.13670000 </optimal_fiber_length>
+					<tendon_slack_length>       0.03800000 </tendon_slack_length>
+					<pennation_angle_at_optimal>       0.31415927 </pennation_angle_at_optimal>
+					<max_contraction_velocity>       0.00000000 </max_contraction_velocity>
+                    <damping>       0.01700000 </damping>
+
+				</Thelen2003Muscle>
+
+                <Thelen2003Muscle name="SUPSP">
+                    <GeometryPath>
+                        <PathPointSet>
+                            <objects>
+                                <PathPoint name="SUPSP1">
+                                    <location> 0.002560000000 0.010630000000 0.025930000000 </location>
+                                    <body> r_humerus </body>
+                                </PathPoint>
+                                <PathPoint name="SUPSP2">
+                                    <location> -0.019180000000 0.001270000000 -0.012710000000 </location>
+                                    <body> scapula </body>
+                                </PathPoint>
+                                <PathPoint name="SUPSP3">
+                                    <location> -0.044000000000 -0.015120000000 -0.058550000000 </location>
+                                    <body> scapula </body>
+                                </PathPoint>
+                            </objects>
+                        </PathPointSet>
+                    </GeometryPath>
+
+                    <optimal_force>1</optimal_force>
+                    <!-- Not commenting-out these lines bring simulation time from 5s to 30s...! -->
+                    <!-- <max_isometric_force>987.26</max_isometric_force>
+                    <optimal_fiber_length>0.0858</optimal_fiber_length>
+                    <tendon_slack_length>0.0535</tendon_slack_length>
+                    <pennation_angle_at_optimal>0</pennation_angle_at_optimal>  -->
+                    <max_contraction_velocity>10</max_contraction_velocity>
+                    <activation_time_constant>0.01</activation_time_constant>
+                    <deactivation_time_constant>0.04</deactivation_time_constant>
+                    <FmaxTendonStrain>0.033</FmaxTendonStrain>
+                    <FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+                    <KshapeActive>0.5</KshapeActive>
+                    <KshapePassive>4</KshapePassive>
+                    <Af>0.3</Af>
+                    <Flen>1.8</Flen>
+
+                    <time_scale>       0.10000000 </time_scale>
+					<activation1>       7.66700000 </activation1>
+					<activation2>       1.45985400 </activation2>
+                    <max_isometric_force> 487.820000000000 </max_isometric_force>
+                    <optimal_fiber_length> 0.068200000000 </optimal_fiber_length>
+                    <tendon_slack_length> 0.039500000000 </tendon_slack_length>
+                    <pennation_angle> 0.122173047640 </pennation_angle>
+                </Thelen2003Muscle>
+                
+                <Thelen2003Muscle name="INFSP">
+					<isDisabled> false </isDisabled>
+					<min_control>       0.00000000 </min_control>
+					<max_control>       1.00000000 </max_control>
+					<GeometryPath name="">
+						<PathPointSet name="">
+							<objects>
+								<PathPoint name="INFSP-P1">
+									<location>      -0.00887000       0.00484000       0.02448000 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+								</PathPoint>
+								<PathPoint name="INFSP-P2">
+									<location>      -0.07382000      -0.05476000      -0.04781000 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> scapula </body>
+								</PathPoint>
+							</objects>
+							<groups/>
+						</PathPointSet>
+						<VisibleObject name="">
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+							    .obj-->
+							<GeometrySet name="">
+								<objects/>
+								<groups/>
+							</GeometrySet>
+							<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+							<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+							<!--transform relative to owner specified as 3 rotations (rad) followed by
+							    3 translations rX rY rZ tx ty tz-->
+							<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+							<!--Whether to show a coordinate frame-->
+							<show_axes> false </show_axes>
+							<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+							    individual geometries-->
+							<display_preference> 4 </display_preference>
+						</VisibleObject>
+					</GeometryPath>
+                    
+                    <optimal_force>1</optimal_force>
+                    <!-- Not commenting-out these lines bring simulation time from 5s to 30s...! -->
+                    <!-- <max_isometric_force>987.26</max_isometric_force>
+                    <optimal_fiber_length>0.0858</optimal_fiber_length>
+                    <tendon_slack_length>0.0535</tendon_slack_length>
+                    <pennation_angle_at_optimal>0</pennation_angle_at_optimal>  -->
+                    <max_contraction_velocity>10</max_contraction_velocity>
+                    <activation_time_constant>0.01</activation_time_constant>
+                    <deactivation_time_constant>0.04</deactivation_time_constant>
+                    <FmaxTendonStrain>0.033</FmaxTendonStrain>
+                    <FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+                    <KshapeActive>0.5</KshapeActive>
+                    <KshapePassive>4</KshapePassive>
+                    <Af>0.3</Af>
+                    <Flen>1.8</Flen>
+
+                    <time_scale>       0.10000000 </time_scale>
+					<activation1>       7.66700000 </activation1>
+					<activation2>       1.45985400 </activation2>
+					<max_isometric_force>    1075.80000000 </max_isometric_force>
+					<optimal_fiber_length>       0.07550000 </optimal_fiber_length>
+					<tendon_slack_length>       0.03080000 </tendon_slack_length>
+					<pennation_angle_at_optimal>       0.33161260 </pennation_angle_at_optimal>
+					<max_contraction_velocity>       0.00000000 </max_contraction_velocity>
+                    <damping>       0.01700000 </damping>
+
+				</Thelen2003Muscle>
+
+				<Thelen2003Muscle name="TMIN">
+					<isDisabled> false </isDisabled>
+					<min_control>       0.00000000 </min_control>
+					<max_control>       1.00000000 </max_control>
+					<GeometryPath name="">
+						<PathPointSet name="">
+							<objects>
+								<PathPoint name="TMIN-P1">
+									<location>      -0.00127000      -0.01259000       0.02200000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+								</PathPoint>
+								<PathPoint name="TMIN-P2">
+									<location>      -0.09473000      -0.07991000      -0.04737000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<show_axes> false </show_axes>
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> scapula </body>
+								</PathPoint>
+								<PathPoint name="TMIN-P3">
+									<location>      -0.09643000      -0.08121000      -0.05298000 </location>
+									<VisibleObject name="">
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> scapula </body>
+								</PathPoint>
+							</objects>
+							<groups/>
+						</PathPointSet>
+						<VisibleObject name="">
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+							    .obj-->
+							<GeometrySet name="">
+								<objects/>
+								<groups/>
+							</GeometrySet>
+							<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+							<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+							<!--transform relative to owner specified as 3 rotations (rad) followed by
+							    3 translations rX rY rZ tx ty tz-->
+							<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+							<!--Whether to show a coordinate frame-->
+							<show_axes> false </show_axes>
+							<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+							    individual geometries-->
+							<display_preference> 4 </display_preference>
+						</VisibleObject>
+					</GeometryPath>
+                    
+                    <optimal_force>1</optimal_force>
+                    <!-- Not commenting-out these lines bring simulation time from 5s to 30s...! -->
+                    <!-- <max_isometric_force>987.26</max_isometric_force>
+                    <optimal_fiber_length>0.0858</optimal_fiber_length>
+                    <tendon_slack_length>0.0535</tendon_slack_length>
+                    <pennation_angle_at_optimal>0</pennation_angle_at_optimal>  -->
+                    <max_contraction_velocity>10</max_contraction_velocity>
+                    <activation_time_constant>0.01</activation_time_constant>
+                    <deactivation_time_constant>0.04</deactivation_time_constant>
+                    <FmaxTendonStrain>0.033</FmaxTendonStrain>
+                    <FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+                    <KshapeActive>0.5</KshapeActive>
+                    <KshapePassive>4</KshapePassive>
+                    <Af>0.3</Af>
+                    <Flen>1.8</Flen>
+
+                    
+                    
+                    <!--Scale factor for normalizing time-->
+					<time_scale>       0.10000000 </time_scale>
+					<!--Parameter used in time constant of ramping up of muscle force-->
+					<activation1>       7.66700000 </activation1>
+					<!--Parameter used in time constant of ramping up and ramping down of
+					    muscle force-->
+					<activation2>       1.45985400 </activation2>
+					<!--Maximum isometric force that the fibers can generate-->
+					<max_isometric_force>     269.50000000 </max_isometric_force>
+					<!--Optimal length of the muscle fibers-->
+					<optimal_fiber_length>       0.07410000 </optimal_fiber_length>
+					<!--Resting length of the tendon-->
+					<tendon_slack_length>       0.07130000 </tendon_slack_length>
+					<!--Angle between tendon and fibers at optimal fiber length-->
+					<pennation_angle_at_optimal>       0.41887902 </pennation_angle_at_optimal>
+					<!--Maximum contraction velocity of the fibers, in optimal fiberlengths
+					    per second-->
+					<max_contraction_velocity>       0.00000000 </max_contraction_velocity>
+					<!--Damping factor related to maximum contraction velocity-->
+                    <damping>       0.01700000 </damping>
+
+				</Thelen2003Muscle>
+
+				<Thelen2003Muscle name="BRD">
+					<isDisabled> false </isDisabled>
+					<!--Minimum allowed value for control signal. Used primarily when solving
+					    for control values-->
+					<min_control>       0.00000000 </min_control>
+					<!--Maximum allowed value for control signal. Used primarily when solving
+					    for control values-->
+					<max_control>       1.00000000 </max_control>
+					<GeometryPath name="">
+						<PathPointSet name="">
+							<objects>
+								<PathPoint name="BRD-P1">
+                                    <!--<location>      -0.00980000      -0.19963000       0.00223000 </location>-->
+                                    <location>      -0.00980000      -0.19963000       0.00223000 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_humerus </body>
+                                </PathPoint>
+
+                                <!-- The two following path points were modified 'by hand' to account for the fact that the radius is here modelled as a joint body ulna-radius-hand -->
+								<PathPoint name="BRD-P2">
+                                    <!-- <location>       0.03577000      -0.12742000       0.02315000 </location> -->
+									<location>       0.01     -0.08       0.035 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body>r_ulna_radius_hand </body>
+								</PathPoint>
+								<PathPoint name="BRD-P3">
+                                    <!-- <location>       0.04190000      -0.221000000       0.02240000 </location> -->
+									<location>      0.01      -0.16000       0.05 </location>
+									<VisibleObject name="">
+										<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+										    .obj-->
+										<GeometrySet name="">
+											<objects/>
+											<groups/>
+										</GeometrySet>
+										<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+										<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+										<!--transform relative to owner specified as 3 rotations (rad) followed by
+										    3 translations rX rY rZ tx ty tz-->
+										<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+										<!--Whether to show a coordinate frame-->
+										<show_axes> false </show_axes>
+										<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+										    individual geometries-->
+										<display_preference> 4 </display_preference>
+									</VisibleObject>
+									<body> r_ulna_radius_hand </body>
+								</PathPoint>
+							</objects>
+							<groups/>
+						</PathPointSet>
+						<VisibleObject name="">
+							<!--Set of geometry files and associated attributes, allow .vtp, .stl,
+							    .obj-->
+							<GeometrySet name="">
+								<objects/>
+								<groups/>
+							</GeometrySet>
+							<!--Three scale factors for display purposes: scaleX scaleY scaleZ-->
+							<scale_factors>       1.00000000       1.00000000       1.00000000 </scale_factors>
+							<!--transform relative to owner specified as 3 rotations (rad) followed by
+							    3 translations rX rY rZ tx ty tz-->
+							<transform>      -0.00000000       0.00000000      -0.00000000       0.00000000       0.00000000       0.00000000 </transform>
+							<!--Whether to show a coordinate frame-->
+							<show_axes> false </show_axes>
+							<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded Can be overriden for
+							    individual geometries-->
+							<display_preference> 4 </display_preference>
+						</VisibleObject>
+					</GeometryPath>
+                    
+                    
+                    
+                    <!--Scale factor for normalizing time-->
+					<time_scale>       0.10000000 </time_scale>
+					<!--Parameter used in time constant of ramping up of muscle force-->
+					<activation1>       7.66700000 </activation1>
+					<!--Parameter used in time constant of ramping up and ramping down of
+					    muscle force-->
+					<activation2>       1.45985400 </activation2>
+					<!--Maximum isometric force that the fibers can generate-->
+					<max_isometric_force>     276.00000000 </max_isometric_force>
+					<!--Optimal length of the muscle fibers-->
+					<optimal_fiber_length>       0.17260000 </optimal_fiber_length>
+					<!--Resting length of the tendon-->
+					<tendon_slack_length>       0.13300000 </tendon_slack_length>
+					<!--Angle between tendon and fibers at optimal fiber length-->
+					<pennation_angle_at_optimal>       0.00000000 </pennation_angle_at_optimal>
+					<!--Maximum contraction velocity of the fibers, in optimal fiberlengths
+					    per second-->
+					<max_contraction_velocity>       0.00000000 </max_contraction_velocity>
+					<!--Damping factor related to maximum contraction velocity-->
+					<damping>       0.01700000 </damping>
+                
+                    
+                    <optimal_force>1</optimal_force>
+                    <!-- Not commenting-out these lines bring simulation time from 5s to 30s...! -->
+                    <!-- <max_isometric_force>987.26</max_isometric_force>
+                    <optimal_fiber_length>0.0858</optimal_fiber_length>
+                    <tendon_slack_length>0.0535</tendon_slack_length>
+                    <pennation_angle_at_optimal>0</pennation_angle_at_optimal>  -->
+                    <max_contraction_velocity>10</max_contraction_velocity>
+                    <activation_time_constant>0.01</activation_time_constant>
+                    <deactivation_time_constant>0.04</deactivation_time_constant>
+                    <FmaxTendonStrain>0.033</FmaxTendonStrain>
+                    <FmaxMuscleStrain>0.6</FmaxMuscleStrain>
+                    <KshapeActive>0.5</KshapeActive>
+                    <KshapePassive>4</KshapePassive>
+                    <Af>0.3</Af>
+                    <Flen>1.8</Flen>
+
+                </Thelen2003Muscle>
+
+
+                <CoordinateLimitForce name="r_shoulder_angle_LimitForce">
+                    <coordinate>r_shoulder_angle</coordinate>
+                    <upper_stiffness>.3</upper_stiffness>
+                    <upper_limit>0.0</upper_limit>
+                    <lower_stiffness>.3</lower_stiffness>
+                    <lower_limit>-180.0</lower_limit>
+                    <damping>1</damping>
+                    <transition>5</transition>
+                    <compute_dissipation_energy>false</compute_dissipation_energy>
+                </CoordinateLimitForce>
+
+
+                <CoordinateLimitForce name="r_shoulder_elev_LimitForce">
+                    <coordinate>r_shoulder_elev</coordinate>
+                    <upper_stiffness>.3</upper_stiffness>
+                    <upper_limit>180.0</upper_limit>
+                    <lower_stiffness>.1</lower_stiffness>
+                    <lower_limit>-90.0</lower_limit>
+                    <damping>1</damping>
+                    <transition>5</transition>
+                    <compute_dissipation_energy> false </compute_dissipation_energy>
+                </CoordinateLimitForce>
+                <CoordinateLimitForce name="r_elbow_flex_LimitForce">
+                    <coordinate>r_elbow_flex</coordinate>
+                    <upper_limit>130.0</upper_limit>
+                    <lower_limit>0.0</lower_limit>
+                    <upper_stiffness>.9</upper_stiffness>
+                    <lower_stiffness>.9</lower_stiffness>
+                    <!--
+                    <upper_stiffness>.3</upper_stiffness>
+                    <lower_stiffness>.1</lower_stiffness>
+                    -->
+                    <damping>1</damping>
+                    <transition>5</transition>
+                    <compute_dissipation_energy> false </compute_dissipation_energy>
+                </CoordinateLimitForce>
+
+
+				<HuntCrossleyForce name="ObstacleForces1">
+					<!--Material properties.-->
+					<HuntCrossleyForce::ContactParametersSet name="contact_parameters">
+						<objects>
+							<HuntCrossleyForce::ContactParameters>
+                                <!--Names of geometry objects affected by these parameters.
+
+                                These prevent the arm from inter-penetrating the chest - see also ContactGeometrySet section
+                                -->
+								<geometry> ThoraxContact1 ThoraxContact2 ForearmContact HumerusContact  </geometry>
+                                <stiffness>1000000</stiffness>
+                                <!--<stiffness>.9</stiffness>-->
+								<dissipation>1</dissipation>
+								<static_friction>0.8</static_friction>
+								<dynamic_friction>0.4</dynamic_friction>
+								<viscous_friction>0.4</viscous_friction>
+							</HuntCrossleyForce::ContactParameters>
+						</objects>
+						<groups />
+					</HuntCrossleyForce::ContactParametersSet>
+					<!--Slip velocity (creep) at which peak static friction occurs.-->
+					<transition_velocity>0.2</transition_velocity>
+				</HuntCrossleyForce>
+			</objects>
+            <groups />
+		</ForceSet>
+		<!--Markers in the model.-->
+		<MarkerSet>
+            <objects>
+				<Marker name="hand">
+					<!--Body segment in the model on which the marker resides.-->
+					<body>r_ulna_radius_hand</body>
+					<!--Location of a marker on the body segment.-->
+					<location> 0.02 -0.40 0.1</location>
+					<!--Flag (true or false) specifying whether or not a marker should be kept fixed in the marker placement step.  i.e. If false, the marker is allowed to move.-->
+					<fixed>false</fixed>
+                </Marker>
+            </objects>
+			<groups />
+		</MarkerSet>
+        <!--ContactGeometries  in the model.
+             These are included to prevent the arms from inter-penetrating / swinging through the chest !
+             They are modelled as spheres for simplicity and speed.
+             See also HuntCrossleyForce section.
+             -->
+		<ContactGeometrySet>
+			<objects>
+				<ContactSphere name="HumerusContact">
+					<!--Body name to connect the contact geometry to-->
+					<body_name>r_humerus</body_name>
+					<!--Location of geometry center in the body frame-->
+					<location>0 -.15 0</location>
+					<!--Orientation of geometry in the body frame-->
+					<orientation>0 0 0</orientation>
+					<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+					<display_preference>0</display_preference>
+					<radius>0.05</radius>
+				</ContactSphere>
+				<ContactSphere name="ForearmContact">
+					<!--Body name to connect the contact geometry to-->
+					<body_name>r_ulna_radius_hand</body_name>
+					<!--Location of geometry center in the body frame-->
+					<location>0 -.05 0</location>
+					<!--Orientation of geometry in the body frame-->
+					<orientation>0 0 0</orientation>
+					<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+					<display_preference>0</display_preference>
+					<radius>0.05</radius>
+				</ContactSphere>
+				<ContactSphere name="ThoraxContact1">
+					<!--Body name to connect the contact geometry to-->
+					<body_name>ground</body_name>
+					<location>-0.02 -0.1 0.0</location>
+					<!--Orientation of geometry in the body frame-->
+					<orientation>0 -0.1 0</orientation>
+					<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+					<display_preference>0</display_preference>
+					<radius>0.12</radius>
+				</ContactSphere>
+				<ContactSphere name="ThoraxContact2">
+					<!--Body name to connect the contact geometry to-->
+					<body_name>ground</body_name>
+					<location>-0.02 -0.3 0.0</location>
+					<!--Orientation of geometry in the body frame-->
+					<orientation>0 0 0</orientation>
+					<!--Display Pref. 0:Hide 1:Wire 3:Flat 4:Shaded-->
+					<display_preference>0</display_preference>
+					<radius>0.15</radius>
+				</ContactSphere>
+			</objects>
+			<groups />
+		</ContactGeometrySet>
+	</Model>
+</OpenSimDocument>
