@@ -1,5 +1,5 @@
-
-// bsub -q short -g /net -oo output2.txt -eo error.txt  -W 10:00 ./net ALPHAINPUTBIAS .5 ALPHAMODUL 16.0 ETA .03 MAXDW 2e-5  <== Good !
+// 1 : not too bad, but 0 is a bit high for one...
+// 20 :
 
 // For training, this is like the others:  4 trial types (attend mod1 or mod2, bias of the relevant modality positive or negative [other modality has random-sign bias])
 // Variable, randomly chosen input biases at each trial: ALPHAINPUTBIAS just sets the maximum.
@@ -23,15 +23,21 @@ void saveWeights(MatrixXd& m, string fname);
 void readWeights(MatrixXd& m, string fname);
 void randJ(MatrixXd& m);
 
+double dt = 1.0;
+double tau = 30.0; // tau is modifiable through command line
 
 int NBNEUR = 200;
-int NBIN = 5;  // Input 0 is reserved for a 'go' signal
+int NBIN = 5;  // Input 0 is reserved for an unused 'go' signal
 int NBOUT = 1;
 double PROBACONN = 1.0;
 double G = 1.5;
 string METHOD = "DELTAX"; // "DELTAX"; //"DELTATOTALEXC"; //"DXTRIAL";
 string MODULTYPE = "DECOUPLED";
-int RNGSEED = 10;
+int RNGSEED = 20;
+
+// DENOM = 1  => There is no smoothing of the sensory inputs, you just get Gaussian noise.
+// DENOM < 1  => The sensory inputs are smoothed by an exponential filter with time constant DENOM.
+double DENOM = 1.0;
 
 int DEBUG = 0;
 
@@ -45,13 +51,11 @@ double ALPHATRACEEXC = 0.05;
 
 double ALPHAINPUTBIAS = 0.5;
 
-int SQUARING = 1;
 
-double MAXDW = 1e-4; // 2e-5 ; //* 1.5;
+double MAXDW = .003; //.001 also OK, with same other params. // 2e-5 ; //* 1.5;
 double ETA =  .01 ; //.03 ; // * 1.5;  // Learning rate
 double INPUTMULT = 3.0;
 
-//double STIMVAL = .5;
 
 double BIAS1 = 100000;
 double BIAS2 = 100000;
@@ -65,26 +69,24 @@ int main(int argc, char* argv[])
 
     fstream myfile;
 
-    double dt = 1.0;
-    double tau = 30.0;
 
-    int NBTRIALTYPES = 4; // 2 if Testing
+    int NBTRIALTYPES = 4; // Is set to 2 if in Testing mode (see below)
 
     int PHASE=LEARNING;
+
+    // Parsing command-line arguments
     if (argc > 1)
        for (int nn=1; nn < argc; nn++)
        {
            if (strcmp(argv[nn], "TEST") == 0) { PHASE = TESTING; cout << "Test mode. " << endl; }
            if (strcmp(argv[nn], "METHOD") == 0) { METHOD = argv[nn+1]; }
            if (strcmp(argv[nn], "MODULTYPE") == 0) { MODULTYPE = argv[nn+1]; }
-           if (strcmp(argv[nn], "SQUARING") == 0) { SQUARING = atoi(argv[nn+1]); }
            if (strcmp(argv[nn], "DEBUG") == 0) { DEBUG = atoi(argv[nn+1]); }
            if (strcmp(argv[nn], "G") == 0) { G = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "ALPHAINPUTBIAS") == 0) { ALPHAINPUTBIAS = atof(argv[nn+1]);  if (PHASE == TESTING) { std::runtime_error( "In Testing phase, do not specify ALPHAINPUTBIAS!");  } }
            if (strcmp(argv[nn], "ETA") == 0) { ETA = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "TAU") == 0) { tau = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "INPUTMULT") == 0) { INPUTMULT = atof(argv[nn+1]); }
-           //if (strcmp(argv[nn], "STIMVAL") == 0) { STIMVAL = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "ALPHAMODUL") == 0) { ALPHAMODUL = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "PROBAMODUL") == 0) { PROBAMODUL = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "PROBAHEBB") == 0) { PROBAHEBB = atof(argv[nn+1]); }
@@ -92,30 +94,34 @@ int main(int argc, char* argv[])
            if (strcmp(argv[nn], "BIAS2") == 0) { BIAS2 = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "ALPHATRACE") == 0) { ALPHATRACE = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "ALPHATRACEEXC") == 0) { ALPHATRACEEXC = atof(argv[nn+1]); }
+           if (strcmp(argv[nn], "DENOM") == 0) { DENOM = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "RNGSEED") == 0) { RNGSEED = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "MAXDW") == 0) { MAXDW = atof(argv[nn+1]); }
        }
 
     if (PHASE == TESTING)
     {
-        NBTRIALTYPES = 2; // Only 2 trial types - the negative biases don't constitute separate trial types for testing purposes (makes data collection easier)
+        NBTRIALTYPES = 2; // Only 2 trial types, separated by attended input - positive vs negative biases don't constitute separate trial types for testing purposes (makes data collection easier)
         if ((BIAS1 > 1000) || (BIAS2 > 1000))
              throw std::runtime_error( "In testing phase, must specify BIAS1 and BIAS2 "); 
     }
 
-    string SUFFIX = "_G" + to_string(G) + "_MAXDW" + to_string(MAXDW) + "_ETA" + to_string(ETA) + "_ALPHAMODUL" + to_string(ALPHAMODUL) + "_PROBAMODUL" + to_string(PROBAMODUL) + "_SQUARING" +to_string(SQUARING) 
+    string SUFFIX = "_G" + to_string(G) + "_MAXDW" + to_string(MAXDW) + "_ETA" + to_string(ETA) + "_ALPHAMODUL" + to_string(ALPHAMODUL) + "_PROBAMODUL" + to_string(PROBAMODUL) 
         + "_MODULTYPE-" + MODULTYPE +   
          "_ALPHATRACE" + to_string(ALPHATRACE) + "_METHOD-" + METHOD + "_ALPHAINPUTBIAS" + to_string(ALPHAINPUTBIAS) + "_PROBAHEBB" + to_string(PROBAHEBB) + "_ATRACEEXC" + to_string(ALPHATRACEEXC) + "_TAU" + to_string(tau) +
         "_INPUTMULT" + to_string(INPUTMULT) + 
+        "_DENOM" + to_string(DENOM) + 
         "_RNGSEED" + to_string(RNGSEED);
     cout << SUFFIX << endl;
 
     myrng.seed(RNGSEED);
     srand(RNGSEED);
 
-    int trialtype;
+double ALPHATRACEINPUT  = 1.0 - (dt / DENOM) ; // If DENOM < 1.0, this implements temporal smoothing of sensory inputs. But we don't use it (i.e. we set DENOM to 1.0).
 
-    int NBTRIALS =  50401; 
+int trialtype;
+
+    int NBTRIALS =  100401; 
     int TRIALTIME = 700;
     int STARTSTIM1 = 1, TIMESTIM1 = 500; 
     //int STARTSTIM2 = 400, TIMESTIM2 = 200; 
@@ -130,20 +136,21 @@ int main(int argc, char* argv[])
 
 
     MatrixXd dJ(NBOUT, NBNEUR); dJ.setZero();
-     MatrixXd win(NBNEUR, NBIN); win.setRandom();  win.row(0).setZero();  // win.topRows(NBNEUR/2).setZero(); // randMat(win); //win.setRandom();// win.row(0).setZero(); // Uniformly between -1 and 1, except possibly for output cell (not even necessary).
-    // cout << win.col(0).head(5) << endl;
+     MatrixXd win(NBNEUR, NBIN); win.setRandom();  win.row(0).setZero();  
     MatrixXd J(NBNEUR, NBNEUR);
     
     randJ(J);
     
 
-    //J.rightCols(NBIN).setRandom();
+    //J.rightCols(NBIN).setRandom(); 
 
 
 
     if (PHASE == TESTING){
-        readWeights(J, "J.dat");
-        readWeights(win, "win.dat");
+        //readWeights(J, "J.dat");
+        //readWeights(win, "win.dat");
+        readWeights(J, "J" + SUFFIX + ".dat");
+        readWeights(win, "win" + SUFFIX + ".dat"); // win doesn't change over time.
         NBTRIALS = 10;  // In total, across all trial types.
     }
 
@@ -284,6 +291,7 @@ int main(int argc, char* argv[])
             biasmodality1 = BIAS1;
             biasmodality2 = BIAS2;
         }
+        double previnput1=0, previnput2=0;
 
 
 
@@ -294,8 +302,10 @@ int main(int argc, char* argv[])
             input(0) = 0.0; input(1) = 0.0; input(2) = 0.0;
             if (numiter >= STARTSTIM1  & numiter <  STARTSTIM1 + TIMESTIM1)
             {
-                input(1) =  .5 * ( Gauss(myrng) + biasmodality1 );
-                input(2) =  .5 * ( Gauss(myrng) + biasmodality2 );
+                // If ALPHATRACEINPUT is non-zero, this implements temporal smoothing of sensory inputs. However, for all experiments we do set it to 0 (see DENOM above).
+                input(1) =  ALPHATRACEINPUT * previnput1 + (1.0-ALPHATRACEINPUT) * .5 * ( Gauss(myrng) + biasmodality1 );
+                input(2) =  ALPHATRACEINPUT * previnput2 + (1.0-ALPHATRACEINPUT) * .5 * ( Gauss(myrng) + biasmodality2 );
+                previnput1 = input(1); previnput2 = input(2);
             }
 
             rprev = r;
@@ -336,22 +346,14 @@ int main(int argc, char* argv[])
                 r(nn) = tanh(x(nn));
             }
             
-/*
-            //r.tail(NBIN) =  INPUTMULT * input;
-            r.tail(NBIN) =  input;
-            r.tail(2*NBIN).head(NBIN) = input;
-            r.tail(3*NBIN).head(NBIN) = input;
-            r.tail(4*NBIN).head(NBIN) = input;
-*/
-            
             rs.col(numiter) = r;
          
 
 
 
             delta_x =  x  - x_trace ;
-            delta_x_sq = delta_x.array() * delta_x.array().abs();
-            delta_x_cu = delta_x.array() * delta_x.array() * delta_x.array();
+            //delta_x_sq = delta_x.array() * delta_x.array().abs();
+            //delta_x_cu = delta_x.array() * delta_x.array() * delta_x.array();
             x_trace = ALPHATRACEEXC * x_trace + (1.0 - ALPHATRACEEXC) * x;
 
 
@@ -367,21 +369,17 @@ int main(int argc, char* argv[])
 
                 if ((PHASE == LEARNING) && (Uniform(myrng) < PROBAHEBB) 
                         && (numiter> 2) 
-                        //&& (abs(numiter - 200) > 5)
-                        //&& (abs(numiter - 400) > 5) && (abs(numiter - 600) > 5) 
                         )
                 {
                     if (METHOD == "DELTAX")
                     {
-                            for (int n1=0; n1 < NBNEUR; n1++)
-                            {
-                                rprevmat[n1] = rprev(n1);
-                                //if (marker == 1){
-                                dx2[n1] = delta_x_cu(n1);
-                            }
+                        double incr;
                             for (int n1=0; n1 < NBNEUR; n1++)
                                 for (int n2=0; n2 < NBNEUR; n2++)
-                                    hebbmat[n1][n2] += rprevmat[n1] * dx2[n2]; //rprev(n1) * delta_x_sq(n2);
+                                {
+                                    incr = rprev(n1) * delta_x(n2);
+                                    hebbmat[n1][n2] += incr * incr * incr;
+                                }
                     }
                     else { cout << "Which method??" << endl; return -1; }
                 }
@@ -394,7 +392,6 @@ int main(int argc, char* argv[])
         err = rs.row(0).array() - tgtresp;
         err.head(TRIALTIME - EVALTIME).setZero();
 
-        //meanerr = 2.0   * err.cwiseAbs().sum();
         meanerr =  err.cwiseAbs().sum() / (double)EVALTIME;
 
         for (int n1=0; n1 < NBNEUR; n1++)
@@ -406,43 +403,24 @@ int main(int argc, char* argv[])
                 // && (numtrial %2 == 1)
            )
             {
-             
-                
-                // dJ = -.0001 * meanerr.sum() * (hebb.array() * (meanerr.sum() - meanerrtrace.col(trialtype).sum())).transpose().cwiseMin(5e-4).cwiseMax(-5e-4); << Version that worked
-                //dJ = (  -.0000001 * meanerr * (hebb.array() * (meanerr - meanerrtrace(trialtype)))).transpose().cwiseMin(1e-6).cwiseMax(-1e-6); 
-                //dJ = (  -.000005 * meanerr * (hebb.array() * (meanerr - meanerrtrace(trialtype)))).transpose().cwiseMin(5e-5).cwiseMax(-5e-5);
-                //dJ = G * (  -  ETA * meanerr * (hebb.array() * (meanerr - meanerrtrace(trialtype)))).transpose().cwiseMin(MAXDW).cwiseMax(-MAXDW);
-                
-                //dJ = (  -  ETA * meanerrtrace(trialtype) * meanerrtrace(trialtype) * (hebb.array() * (meanerr - meanerrtrace(trialtype)))).transpose().cwiseMin(MAXDW).cwiseMax(-MAXDW);
                 dJ = (  -  ETA * meanerrtrace(trialtype) * (hebb.array() * (meanerr - meanerrtrace(trialtype)))).transpose().cwiseMin(MAXDW).cwiseMax(-MAXDW);
-
-
-                //dJ.rightCols(NBIN).setZero();
-
-
-
-                //J /= G;
                 J +=  dJ;
-                //J *= G;
-
-
             }
 
 
         meanerrtrace(trialtype) = ALPHATRACE * meanerrtrace(trialtype) + (1.0 - ALPHATRACE) * meanerr; 
-        //meanerrtrace(trialtype) = meanerr; 
         meanerrs(numtrial) = meanerr;
        
 
         if (PHASE == LEARNING)
         {
-            if (numtrial % 3000 < 8) 
+            /*if (numtrial % 3000 < 8) 
             {
                 //myfile.open("rs"+std::to_string((numtrial/2)%4)+".txt", ios::trunc | ios::out);  myfile << endl << rs.transpose() << endl; myfile.close();
                 //myfile.open("rs"+std::to_string(trialtype)+".txt", ios::trunc | ios::out);  myfile << endl << rs.transpose() << endl; myfile.close();
                 
                 //myfile.open("rs"+std::to_string(numtrial % 3000)+".txt", ios::trunc | ios::out);  myfile << endl << rs.transpose() << endl; myfile.close();
-            }
+            }*/
             if ((numtrial % 10000 == 0) || (numtrial == NBTRIALS - 1))
             {
                 saveWeights(J, "J.dat");
@@ -452,7 +430,7 @@ int main(int argc, char* argv[])
                 myfile.open("J" + SUFFIX + ".txt", ios::trunc | ios::out);  myfile << J << endl; myfile.close();
                 myfile.open("win" + SUFFIX + ".txt", ios::trunc | ios::out);  myfile << win << endl; myfile.close();
                 saveWeights(J, "J" + SUFFIX + ".dat");
-                saveWeights(win, "win" + SUFFIX + ".dat"); // win doesn't change over time.
+                saveWeights(win, "win" + SUFFIX + ".dat"); // Note that win doesn't change over time, but whatever.
                 
                 myfile.open("errs" + SUFFIX + ".txt", ios::trunc | ios::out);  myfile << endl << meanerrs.head(numtrial) << endl; myfile.close();
 
@@ -510,7 +488,7 @@ void saveWeights(MatrixXd& J, string fname)
             wdata[idx++] = J(rr, cc);
     ofstream myfile(fname, ios::binary | ios::trunc);
     if (!myfile.write((char*) wdata, J.rows() * J.cols() * sizeof(double)))
-        throw std::runtime_error("Error while saving matrix of weights.\n");
+        throw std::runtime_error("Error while saving matrix of weights. (Filename: " + fname + ")\n");
     myfile.close();
 }
 void readWeights(MatrixXd& J, string fname)

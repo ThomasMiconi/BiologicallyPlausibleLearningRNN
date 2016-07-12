@@ -21,7 +21,7 @@ ion()
 
 
 
-if  1:  # After you run this code the 1st time, you can replace this with 'if 0:' to load pre-digested data from the pkl file, which saves some time
+if  2:  # After you run this code the 1st time, you can replace this with 'if 0:' to load pre-digested data from the pkl file, which saves some time
     print "Loading files..."
     resps = []
     allfnames = glob.glob('rs_*type*.txt') 
@@ -106,10 +106,10 @@ zdata = np.divide( (dd - meanz), stdz )  # Python broadcasting FTW!
 
 
 # We need to build a new vector that contains the expected ('target') response for each trial (-1 or +1)
-# The target response is the sign of the bias in the relavant modality (+1 or -1)
+# The target response is the sign of the bias in the relevant modality (+1 or -1)
 # If trialtype = 0 relevant modality is 1. If trialtype = 1 relevant modality is 2. So...
 trialtgts = sign(allbias1s) * (1 - np.array(trialtypes)) + sign(allbias2s) *  np.array(trialtypes)
-#Correlates with actual network response at ~ .90
+#Correlates with actual network response at ~ .90 
 
 # Important that trialtgts (the choice variable) goes first, because of the QR decomposition. See Mante Sussillo Supp Mat 6.7 
 regressands = np.vstack((trialtgts, allbias1s, allbias2s, trialtypes)).T
@@ -153,6 +153,8 @@ coeffzmax=[]
 for numfeature in range(4):
     coeffzmax.append(coeffz[:, numfeature, argmax([norm(coeffz[:, numfeature , x]) for x in range(70)])])
 coeffzmax = vstack(coeffzmax).T
+
+# Like Sussillo, we apply QR decomposition
 qcoeffzmax, r = np.linalg.qr(coeffzmax)
 
 # Showing how that the computed regression coefficients can be used for predicting cell activations from regressands / trial features
@@ -180,6 +182,9 @@ for numgraph in range(4):
     title('Context: Attend Mod. ' + str(numgraph % 2 + 1) +'\n' + 'Grouping by Mod. ' + str(int(numgraph/2) +1) +' bias', fontsize=10)
     xlabel('Choice representation' )
     ylabel('Mod. ' + str(1 + int(numgraph/2)) + ' representation')
+
+    # First we generate all the raw trajectories..
+    allpfs=[]
     for choice in ( -1, 1):
         for B1 in unique(allbias1s):
             if B1 == 0:
@@ -191,19 +196,45 @@ for numgraph in range(4):
                 mask1 = correctz & (allbias1s == B1) & (trialtypes == numgraph % 2) & (trialtgts == choice)
             else:
                 mask1 = correctz & (allbias2s == B1) & (trialtypes == numgraph % 2) & (trialtgts == choice)
+
+            # Note that in some case (e.g. when the bias in the relevant
+            # modality is of the opposite sign as the choice), we won't get any
+            # trials (because that would mean an incorrect trial, which we
+            # don't collect!)
+            if mask1.sum() == 0:
+                continue
+
             meantraj = np.mean(zdata[:, mask1, :] , axis = 1)
             predictedfeatures = []
             for timeslice in range(NBTIMESLICES):
-                #predictedfeatures.append(np.dot(qpertime[-1].T, meantraj[timeslice, :] + interz[timeslice, :] ) ) # + interz[timeslice,:] ) )
-                #predictedfeatures.append(np.dot(qpertime[timeslice].T, meantraj[timeslice, :] + interz[timeslice, :] ) ) # + interz[timeslice,:] ) ) # This is Bad!
-                #predictedfeatures.append(np.dot(coeffz[:, :, timeslice].T, meantraj[timeslice, :] + interz[timeslice, :] ) ) # + interz[timeslice,:] ) )
-                #predictedfeatures.append(np.dot(coeffz[:, :, -1].T, meantraj[timeslice, :] + interz[timeslice, :] ) ) # + interz[timeslice,:] ) )
-                #predictedfeatures.append(np.dot(coeffzmax[:, :].T, meantraj[timeslice, :] + interz[timeslice, :] ) ) # + interz[timeslice,:] ) )
-                #predictedfeatures.append(np.dot(coeffzmax[:, :].T, meantraj[timeslice, :] ) )
-                #predictedfeatures.append(np.dot(qcoeffzmax[:, :].T, meantraj[timeslice, :] + interz[timeslice, :] ) ) # + interz[timeslice,:] ) )
                 predictedfeatures.append(np.dot(qcoeffzmax[:, :].T, meantraj[timeslice, :] ) )
-            z, = plot([predictedfeatures[x][0] for x in range(2, NBTIMESLICES)], [predictedfeatures[x][1 + int(numgraph/2)]  for x in range(2, NBTIMESLICES)],
+
+            predictedfeatures = np.array(predictedfeatures)
+
+            allpfs.append(predictedfeatures)
+
+    
+    allpfz = dstack(allpfs)
+    allpfz = allpfz - np.mean(allpfz, axis=2).reshape(70, 4, 1) # Subtract the cross-condtion mean (Like sussillo for Ext Data Figure 7, and Song et al Plos Comp Biol)
+
+    # Plot the trajectories
+    numline = 0
+    for choice in ( -1, 1):
+        for B1 in unique(allbias1s):
+            if B1 == 0: 
+                continue
+            if numgraph < 2:
+                mask1 = correctz & (allbias1s == B1) & (trialtypes == numgraph % 2) & (trialtgts == choice)
+            else:
+                mask1 = correctz & (allbias2s == B1) & (trialtypes == numgraph % 2) & (trialtgts == choice)
+            if mask1.sum() == 0:
+                continue
+            # 0 is always the choice dimension. For any graph, the other dimension (modality 1 repres. or modality 2 repres.) is given by int(numgraph/2)
+            z, = plot([allpfz[x, 0, numline] for x in range(1, NBTIMESLICES)], [allpfz[x, 1 + int(numgraph/2), numline]  for x in range(1, NBTIMESLICES)],
                     color = [.5 + 2 * B1, .5 - 2* B1, .5 - 2*abs(B1)] )
+            #z, = plot([predictedfeatures[x][0] for x in range(2, NBTIMESLICES)], [predictedfeatures[x][1 + int(numgraph/2)]  for x in range(2, NBTIMESLICES)],
+            #        color = [.5 + 2 * B1, .5 - 2* B1, .5 - 2*abs(B1)] )
+            numline += 1
             linez.append(z)
 
 

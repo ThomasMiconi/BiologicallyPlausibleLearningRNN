@@ -10,7 +10,7 @@ do
 
 
     #mycmd="bsub -q short -g /subtest -oo output$i.txt -eo error$i.txt  -W 10:00 ./net TEST BIAS1 $BIAS1 BIAS2 $BIAS2 "
-    mycmd="bsub -q short -g /subtest -oo output$i.txt -eo error$i.txt  -W 10:00 ./net TEST BIAS1 $BIAS1 BIAS2 $BIAS2 PROBAMODUL 0.0"
+    mycmd="bsub -q short -g /subtest -oo output$i.txt -eo error$i.txt  -W 10:00 ./net TEST BIAS1 $BIAS1 BIAS2 $BIAS2 PROBAMODUL 0.0 RNGSEED 20"
 
     echo $mycmd
     $mycmd

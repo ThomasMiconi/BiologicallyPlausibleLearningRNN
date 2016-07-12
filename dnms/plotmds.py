@@ -13,7 +13,15 @@ if 1:
     labellist=[]
     for trialtype in range(4):
         print trialtype
-        fnames = glob.glob('rs_long_type'+str(trialtype)+'*SEED1.txt')
+
+#trying 300 ms , total time 1100
+#0 : too messy
+# 1 : also too messy
+# Also too messy.
+
+# Back to 1000 ms, eval time 200, but longer training?
+# 0 still seems least bad
+        fnames = glob.glob('rs_long_type'+str(trialtype)+'*ETA0.1*SEED0.txt')
         for nm in fnames:
             r = loadtxt(nm)
             #z = r.reshape((110,10,200))
@@ -33,6 +41,8 @@ NBPTS = matdata.shape[2]
 matdata += .0 * standard_normal(shape(matdata))
 
 
+ion()
+
 fgr, sps = subplots(3, 2)
 
 # 8.5cm = 3.3 inches for single column. 6.9 inches for two-column
@@ -46,7 +56,7 @@ for numgraph in range(4):
     
     tslc = matdata[slicetimes[numgraph],:,:].T
     
-    mds = manifold.MDS(n_components=2,  max_iter=10000, dissimilarity="euclidean")
+    mds = manifold.MDS(n_components=2,  max_iter=1000, dissimilarity="euclidean")
     pos = mds.fit(tslc).embedding_
     
     ax = sps[numgraph/2,numgraph%2]

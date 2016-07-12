@@ -3,7 +3,8 @@
 # [sum(loadtxt(ss)[-5000:]>1.0) for ss in fn]
 
 from scipy.optimize import curve_fit
-
+from pylab import *
+import glob
 
 def sigmo(x, k, a, b, c):
     #y = -1.0 + 2.0 / (1.0 + exp(-k*x))
@@ -12,8 +13,12 @@ def sigmo(x, k, a, b, c):
     return y
 
 
-from pylab import *
-import glob
+
+font = {#'family' : 'normal',
+#                'weight' : 'bold',
+                       'size'   : 8}
+
+rc('font', **font)
 
 # Type 0 : modality 1 positive bias, modality 2 random, look at modality 1
 # Type 1 : modality 1 negative bias, modality 2 random, look at modality 1
@@ -26,7 +31,7 @@ import glob
 ion()
 
 fgr = figure()
-fgr.set_size_inches(5, 5)
+fgr.set_size_inches(4, 4)
 fgr.set_facecolor('white')
 
 if  1:
@@ -78,18 +83,20 @@ for nplot in range(4):
 
     subplot(2, 2, nplot+1)
     if nplot == 0:
-        title('Attend Modality 1')
+        title('Attend Modality 1', size=10)
+        #text(-5.5, .1, 'Mean Response',  rotation='vertical')
         ylabel('Mean Response')
     if nplot == 1:
-        title('Attend Modality 2')
-        ylabel('Mean Response')
+        title('Attend Modality 2', size=10)
+    if nplot == 2:
+        ylabel('Mean Response', size=9)
 
     if nplot < 2:
         mms = mms1
-        xlabel('Bias Modality 1', verticalalignment='top', labelpad=0)
+        xlabel('Bias Modality 1', verticalalignment='top', labelpad=0, size=9)
     if nplot >= 2:
         mms = mms2
-        xlabel('Bias Modality 2', verticalalignment='top', labelpad=0)
+        xlabel('Bias Modality 2', verticalalignment='top', labelpad=0, size=9)
     #title(str(nplot))
     ydata = np.mean(mms[nplot % 2], 0)
     popt, pcov = curve_fit(sigmo, xdata, ydata, maxfev=10000)
@@ -101,6 +108,7 @@ for nplot in range(4):
     yticks([-1, 1])
     xticks(xdata[::2], [str(nn) for nn in xdatanorm[::2]])
 
+tight_layout()
 savefig('figure_detection.png', bbox_inches='tight', dpi=300)
 
 #fnames=[]

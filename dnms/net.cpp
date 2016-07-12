@@ -1,5 +1,3 @@
-//errs_G1.500000_MAXDW0.000300_ETA0.030000_ALPHAMODUL16.000000_PROBAMODUL0.003000_SQUARING1_MODULTYPE-DECOUPLED_ALPHATRACE0.500000_METHOD-DELTAX_ALPHABIAS0.000000_PROBAHEBB1.000000_ATRACEEXC0.050000_TAU30.000000_NDUPL3.000000_RNGSE
-
 #include <iostream>
 #include <stdexcept>
 #include <fstream>
@@ -24,45 +22,48 @@ void randMat(MatrixXd& m);
 
 
 int NBNEUR = 200;
-int NBIN = 3;  // Input 0 is reserved for a 'go' signal
+int NBIN = 3;  // Input 0 is reserved for a 'go' signal that is not used here.
 int NBOUT = 1;
-double PROBACONN = 1.0;
-double G = 1.5;
+double PROBACONN = 1.0;  // Dense connectivity
+double G = 1.5;   // Early chaotic regime. Chaos ma non troppo.
 
 
 
-// For *fast*, but less biologically plausible method (simple node-perturbation method a la Fiete & Seung 2006 - faster, because you only compute the Hebbian increment on the few trials where a perturbation actually occurs!):
+// For *fast*, but less biologically plausible method (simple node-perturbation
+// method, similar to Fiete & Seung 2006).
+// It is faster because you only compute the
+// Hebbian increment on the few timesteps where a perturbation actually
+// occurs.
 /*
-   string METHOD = "MODUL"; //"DELTAX"; // "DELTAX"; //"DELTATOTALEXC"; //"DXTRIAL";
-   string MODULTYPE = "UNIFORM";
-   double ALPHAMODUL = 2.0;
-   double ETA = .01 ; // * 1.5;  // Learning rate
-   */
+string METHOD = "NODEPERT"; 
+double ETA = .001 ; //  Learning rate
+*/
 
-// For slower, but more biologically plausible method (based on decoupled perturbations for each neuron, with cubed fluctuations to 'extract' the exploratory perturbations - see paper):
-string METHOD = "DELTAX"; // "DELTAX"; //"DELTATOTALEXC"; //"DXTRIAL";
-string MODULTYPE = "DECOUPLED";
-double ALPHAMODUL = 16.0;  // Note that TAU = 30, so  16.0 / TAU ~= .5
-double ETA = .03;
+//For slower, but more biologically plausible method (based on detrended
+//post-synaptic activities and nonlinearized Hebbian increments to 'extract'
+//the exploratory perturbations - see http://biorxiv.org/content/early/2016/06/07/057729 :
+string METHOD = "DELTAX"; 
+double ETA = .1;  //  Learning rate
 
 
+// == PARAMETERS ==
 
-int RNGSEED = 1;
+string MODULTYPE = "DECOUPLED"; // Modulations (exploratory perturbations) are applied independently to each neuron.
+double ALPHAMODUL = 16.0;  // Note that TAU = 30ms, so the real ALPHAMODUL is 16.0 * dt / TAU ~= .5
+double MAXDW = 3e-4 ; 
+double PROBAMODUL = .003;
+
+int RNGSEED = 0;
 
 int DEBUG = 0;
 
-double PROBAMODUL = .003;
-double NDUPL = 5;
 
-double PROBAHEBB = 1.0;
-double ALPHABIAS = .0; //.01
 
-double ALPHATRACE = .5;
+double ALPHATRACE = .75;
 double ALPHATRACEEXC = 0.05;
 
 int SQUARING = 1;
 
-double MAXDW = 3e-4 ; //* 1.5;
 
 //double INPUTMULT = 5.0;
 
@@ -89,16 +90,13 @@ int main(int argc, char* argv[])
             if (strcmp(argv[nn], "METHOD") == 0) { METHOD = argv[nn+1]; }
             if (strcmp(argv[nn], "MODULTYPE") == 0) { MODULTYPE = argv[nn+1]; }
             if (strcmp(argv[nn], "SQUARING") == 0) { SQUARING = atoi(argv[nn+1]); }
-            if (strcmp(argv[nn], "NDUPL") == 0) { NDUPL = atoi(argv[nn+1]); }
             if (strcmp(argv[nn], "DEBUG") == 0) { DEBUG = atoi(argv[nn+1]); }
             if (strcmp(argv[nn], "G") == 0) { G = atof(argv[nn+1]); }
-            if (strcmp(argv[nn], "ALPHABIAS") == 0) { ALPHABIAS = atof(argv[nn+1]); }
             if (strcmp(argv[nn], "ETA") == 0) { ETA = atof(argv[nn+1]); }
             if (strcmp(argv[nn], "TAU") == 0) { tau = atof(argv[nn+1]); }
             //if (strcmp(argv[nn], "INPUTMULT") == 0) { INPUTMULT = atof(argv[nn+1]); }
             if (strcmp(argv[nn], "ALPHAMODUL") == 0) { ALPHAMODUL = atof(argv[nn+1]); }
             if (strcmp(argv[nn], "PROBAMODUL") == 0) { PROBAMODUL = atof(argv[nn+1]); }
-            if (strcmp(argv[nn], "PROBAHEBB") == 0) { PROBAHEBB = atof(argv[nn+1]); }
             if (strcmp(argv[nn], "ALPHATRACE") == 0) { ALPHATRACE = atof(argv[nn+1]); }
             if (strcmp(argv[nn], "ALPHATRACEEXC") == 0) { ALPHATRACEEXC = atof(argv[nn+1]); }
             if (strcmp(argv[nn], "RNGSEED") == 0) { RNGSEED = atof(argv[nn+1]); }
@@ -106,8 +104,7 @@ int main(int argc, char* argv[])
         }
 
     string SUFFIX = "_G" + to_string(G) + "_MAXDW" + to_string(MAXDW) + "_ETA" + to_string(ETA) + "_ALPHAMODUL" + to_string(ALPHAMODUL) + "_PROBAMODUL" + to_string(PROBAMODUL) + "_SQUARING" +to_string(SQUARING) + "_MODULTYPE-" + MODULTYPE +   
-        "_ALPHATRACE" + to_string(ALPHATRACE) + "_METHOD-" + METHOD + "_ALPHABIAS" + to_string(ALPHABIAS) + "_PROBAHEBB" + to_string(PROBAHEBB) + "_ATRACEEXC" + to_string(ALPHATRACEEXC) + "_TAU" + to_string(tau) + 
-        "_NDUPL" +to_string(NDUPL) + 
+        "_ALPHATRACE" + to_string(ALPHATRACE) + "_METHOD-" + METHOD +  "_ATRACEEXC" + to_string(ALPHATRACEEXC) + "_TAU" + to_string(tau) + 
         //"_INPUTMULT" +to_string(INPUTMULT) + 
         "_RNGSEED" + 
         to_string(RNGSEED);
@@ -116,9 +113,11 @@ int main(int argc, char* argv[])
     myrng.seed(RNGSEED);
     srand(RNGSEED);
 
+
     int trialtype;
 
-    int NBTRIALS = 100407; 
+
+    int NBTRIALS = 20407; // ~10K trials sufficient to get good convergence (95% correct on a binary criterion is reached within ~1000 trials, but performance keeps improving after that). Should really be 100K if you have time.
     int TRIALTIME = 1000;
     int STARTSTIM1 = 1, TIMESTIM1 = 200; 
     int STARTSTIM2 = 400, TIMESTIM2 = 200; 
@@ -126,7 +125,8 @@ int main(int argc, char* argv[])
       int STARTSTIM1 = 1, TIMESTIM1 = 200; // 200
       int STARTSTIM2 = 400, TIMESTIM2 = 200; */
 
-    int marker =0;
+    VectorXi modulmarker(NBNEUR); modulmarker.setZero();
+
     if (PHASE == TESTING) 
     {
         NBTRIALS = 20*NBPATTERNS;
@@ -139,59 +139,19 @@ int main(int argc, char* argv[])
     MatrixXd tgtresps[NBPATTERNS];
 
 
-    // Remember that input channel 0 is reserved for the 'go' signal
+    // Remember that input channel 0 is reserved for the (unused) 'go' signal
 
 
-    // For the simple binary mapping problem (easier with short TIMETRIAL, e.g. TIMETRIAL 700, TIMESTIM1 200, evaluation period 300; remember to set NBPATTERNS to 2; check the evaluation period!):
-
-    /*    
-          patterns[0] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[0].row(1).segment(STARTSTIM1, TIMESTIM1).fill(STIMVAL);
-          patterns[1] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[1].row(2).segment(STARTSTIM1, TIMESTIM1).fill(STIMVAL);
-
-          tgtresps[0] = MatrixXd::Zero(1, TRIALTIME); tgtresps[0].fill(.97);
-          tgtresps[1] = MatrixXd::Zero(1, TRIALTIME); tgtresps[1].fill(-.97);
-          */  
-
-
-    /*
-    // For the simple binary mapping problem (easier with short TIMETRIAL; remember to set NBPATTERNS to 2; check the evaluation period!):
-    patterns[0] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[0].row(1).segment(STARTSTIM1, TIMESTIM1).fill(-STIMVAL);
-    patterns[1] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[1].row(1).segment(STARTSTIM1, TIMESTIM1).fill(STIMVAL);
-
-    tgtresps[0] = MatrixXd::Zero(1, TRIALTIME); tgtresps[0].fill(.97);
-    tgtresps[1] = MatrixXd::Zero(1, TRIALTIME); tgtresps[1].fill(-.97);
-
-*/
-
-    /*
-    // For the graded memory problem with three values (remember to set a long-ish TIMETRIAL and set NBPATTERNS to 3; check the evaluation period!):
-    patterns[0] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[0].row(1).segment(STARTSTIM1, TIMESTIM1).fill(.33);
-    patterns[1] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[1].row(1).segment(STARTSTIM1, TIMESTIM1).fill(.66);
-    patterns[2] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[2].row(1).segment(STARTSTIM1, TIMESTIM1).fill(1.0);
-    tgtresps[0] = MatrixXd::Zero(1, TRIALTIME); tgtresps[0].fill(.33);
-    tgtresps[1] = MatrixXd::Zero(1, TRIALTIME); tgtresps[1].fill(.66);
-    tgtresps[2] = MatrixXd::Zero(1, TRIALTIME); tgtresps[2].fill(1.0);
-    */
-
-    /*
-    // For the OTHER form of sequential-XOR problem, where you put different VALUES OF THE STIMULUS into either channel (so there are really 4 different inputs to the cells). (NBPATTERNS to 4, TRIALTIME end eval. time appropriate): 
-    patterns[0] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[0].row(1).segment(STARTSTIM1, TIMESTIM1).fill(-1.0); patterns[0].row(2).segment(STARTSTIM2, TIMESTIM2).fill(-1.0);
-    patterns[1] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[1].row(1).segment(STARTSTIM1, TIMESTIM1).fill(-1.0); patterns[1].row(2).segment(STARTSTIM2, TIMESTIM2).fill(1.0);
-    patterns[2] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[2].row(1).segment(STARTSTIM1, TIMESTIM1).fill(1.0); patterns[2].row(2).segment(STARTSTIM2, TIMESTIM2).fill(-1.0);
-    patterns[3] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[3].row(1).segment(STARTSTIM1, TIMESTIM1).fill(1.0); patterns[3].row(2).segment(STARTSTIM2, TIMESTIM2).fill(1.0);
-    tgtresps[0] = MatrixXd::Zero(1, TRIALTIME); tgtresps[0].fill(-.98);
-    tgtresps[1] = MatrixXd::Zero(1, TRIALTIME); tgtresps[1].fill(.98);
-    tgtresps[2] = MatrixXd::Zero(1, TRIALTIME); tgtresps[2].fill(.98);
-    tgtresps[3] = MatrixXd::Zero(1, TRIALTIME); tgtresps[3].fill(-.98);
-
-*/
-
-    // For the sequential-XOR problem (NBPATTERNS to 4, TRIALTIME end eval. time appropriate): 
+    // For the sequential-XOR problem (NBPATTERNS to 4, TRIALTIME and eval. time as appropriate): 
+    // We encode the input patterns as matrices with NBIN rows and TRIALTIME columns, which we fill with the appropriate input values at every time step and for each input channel
+    
 
     patterns[0] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[0].row(1).segment(STARTSTIM1, TIMESTIM1).fill(1.0); patterns[0].row(1).segment(STARTSTIM2, TIMESTIM2).fill(1.0);
     patterns[1] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[1].row(1).segment(STARTSTIM1, TIMESTIM1).fill(1.0); patterns[1].row(2).segment(STARTSTIM2, TIMESTIM2).fill(1.0);
     patterns[2] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[2].row(2).segment(STARTSTIM1, TIMESTIM1).fill(1.0); patterns[2].row(1).segment(STARTSTIM2, TIMESTIM2).fill(1.0);
     patterns[3] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[3].row(2).segment(STARTSTIM1, TIMESTIM1).fill(1.0); patterns[3].row(2).segment(STARTSTIM2, TIMESTIM2).fill(1.0);
+
+    // Target responses - what the network ought to produce (note that only the last EVALTIME timesteps are actually relevant - see below)
     tgtresps[0] = MatrixXd::Zero(1, TRIALTIME); tgtresps[0].fill(-.98);
     tgtresps[1] = MatrixXd::Zero(1, TRIALTIME); tgtresps[1].fill(.98);
     tgtresps[2] = MatrixXd::Zero(1, TRIALTIME); tgtresps[2].fill(.98);
@@ -200,16 +160,15 @@ int main(int argc, char* argv[])
 
 
 
-    MatrixXd dJ(NBOUT, NBNEUR); dJ.setZero();
-    MatrixXd win(NBNEUR, NBIN); win.setRandom(); win.row(0).setZero(); // Uniformly between -1 and 1, except possibly for output cell (not even necessary).
+    MatrixXd dJ(NBNEUR, NBNEUR); dJ.setZero();
+    MatrixXd win(NBNEUR, NBIN); win.setRandom(); win.row(0).setZero(); // Input weights are uniformly between -1 and 1, except possibly for output cell (not even necessary). No plasticity for input weights.
 
 
-    //win.topRows(NBNEUR/2).setZero();
 
-    //    cout << win.col(0).head(5) << endl;
     MatrixXd J(NBNEUR, NBNEUR);
 
-    randJ(J);
+
+    randJ(J); // Randomize recurrent weight matrix, according to the Sompolinsky method (Gaussian(0,1), divided by sqrt(ProbaConn*N) and multiplied by G - see definition of randJ() below).
 
     if (PHASE == TESTING){
         if (RANDW == 0){
@@ -222,6 +181,7 @@ int main(int argc, char* argv[])
     }
 
 
+//cout << J(0,0) << " " << win(1,1) << endl;
 
     VectorXd meanerrs(NBTRIALS); meanerrs.setZero();
     VectorXd lateral_input;
@@ -260,24 +220,20 @@ int main(int argc, char* argv[])
     for (int numtrial=0; numtrial < NBTRIALS; numtrial++)
     {
 
-        if (PHASE == LEARNING)
-            //trialtype = (int)(numtrial/2) % NBPATTERNS;
-            trialtype = numtrial % NBPATTERNS;
-        else 
-            trialtype = numtrial % NBPATTERNS;
+        trialtype = numtrial % NBPATTERNS;
 
 
+        // We use native-C array hebbmat for fast computations within the loop, then transfer it back to Eigen matrix hebb for plasticity computations
+        hebb.setZero();
         for (int n1=0; n1 < NBNEUR; n1++)
             for (int n2=0; n2 < NBNEUR; n2++)
                 hebbmat[n1][n2] = 0;
-        hebb.setZero();
-        dJ.setZero();
         r.setZero();
-        //input = patterns.col(trialtype);
         input.setZero();
 
 
-        // Initialization with small random noise.
+        // Initialization with moderate random noise. Decreases performance a bit, but more realistic.
+
         x.setRandom(); x *= .1; 
         x(1)=1.0; x(10)=1.0;x(11)=-1.0; //x(12) = 1.0;  // Biases
         for (int nn=0; nn < NBNEUR; nn++)
@@ -293,47 +249,38 @@ int main(int argc, char* argv[])
             rprev = r;
             lateral_input =  J * r;
 
-            //total_exc =  lateral_input /*+ wfb * zout */ + win * input ;
             total_exc =  lateral_input + win * input ;
-            //total_exc =  lateral_input ;
 
 
 
 
             // Exploratory perturbations
-
             modul.setZero();
             if (MODULTYPE == "UNIFORM")
             {
-                // Apply a modulation to the entire network with probability PROBAMODUL
+                // Apply a modulation to the entire network with probability PROBAMODUL - Not used for these simulations.
                 if ( (Uniform(myrng) < PROBAMODUL)
-                        && (marker == 0) // No back-to-back perturbations !
                         && (numiter> 3)
-                        // && (abs(numiter - 200) > 5)
-                        //       && (abs(numiter - 400) > 5) && (abs(numiter - 600) > 5) 
                    )
-
                 {
                     randVec(modul);
                     modul *= ALPHAMODUL;
-                    //modul_trace = .9 * modul_trace + .1 * modul;
-                    //total_exc +=  ALPHAMODUL * modul_trace;
                     total_exc +=   modul;
-                    marker = 1;
+                    modulmarker.fill(1);
                 }
                 else
-                    marker = 0;
+                    modulmarker.setZero();
             }
             else if (MODULTYPE == "DECOUPLED")
             {
                 // Perturb each neuron independently with probability PROBAMODUL
-                marker = 0;
+                modulmarker.setZero();
                 for (int nn=0; nn < NBNEUR; nn++)
                     if ( (Uniform(myrng) < PROBAMODUL)
                             && (numiter> 3)
                        )
                     {
-                        marker = 1;
+                        modulmarker(nn) = 1;
                         modul(nn) = (-1.0 + 2.0 * Uniform(myrng));
                     }
                 modul *= ALPHAMODUL;
@@ -352,27 +299,19 @@ int main(int argc, char* argv[])
                 r(nn) = tanh(x(nn));
             }
 
-            // Inputs are directly injected into input neurons
-            //r.tail(NBIN) = INPUTMULT * input;
-
-            // Alternative method:
-            //for (int nd=0; nd < NDUPL; nd++){
-            //    r.tail((1+nd)*NBIN).head(NBIN) =   input;
-            //}
-
 
             rs.col(numiter) = r;
 
-            // Compute the fluctuations of neural activity (also sign-preserving-squared and cubed)
+            // Compute the fluctuations of neural activity (detrending / high-pass filtering)
             delta_x =  x  - x_trace ;
-            delta_x_sq = delta_x.array() * delta_x.array().abs();
-            delta_x_cu = delta_x.array() * delta_x.array() * delta_x.array();
+            //delta_x_sq = delta_x.array() * delta_x.array().abs();
+            //delta_x_cu = delta_x.array() * delta_x.array() * delta_x.array();
             x_trace = ALPHATRACEEXC * x_trace + (1.0 - ALPHATRACEEXC) * x;
 
 
             if (DEBUG > 0)
             {
-                if ((marker == 1)  || (DEBUG == 2))
+                if (( modulmarker.any() )  || (DEBUG == 2))
                     cout << delta_x_sq.norm() << " " << modul.norm() << " " << total_exc.norm() << " " << x.norm() << " " << (total_exc - x).norm() << " Alignment deltax/total_exc (inc. modul):" 
                         << delta_x.dot(total_exc) / (delta_x.norm() * total_exc.norm()) 
                            << " Alignment deltax/modul:" << delta_x.dot(modul) / (delta_x.norm() * modul.norm()) << " Align deltax_sq/modul:" << delta_x_sq.dot(modul) / (delta_x_sq.norm() * modul.norm()) <<  endl;
@@ -380,59 +319,47 @@ int main(int argc, char* argv[])
 
 
 
-            // Actual learning:
+            // Computing the Hebbian increment for this time step
 
-            //if ((PHASE == LEARNING) && (Uniform(myrng) < PROBAHEBB) & (numiter > 3))
-            if ((PHASE == LEARNING) && (Uniform(myrng) < PROBAHEBB) 
+            if ( (PHASE == LEARNING) 
                     && (numiter> 2) 
-                    //&& (abs(numiter - 200) > 5)
-                    //&& (abs(numiter - 400) > 5) && (abs(numiter - 600) > 5) 
                )
             {
                 if (METHOD == "DELTAX")
                 {
-                    // Method from the paper. Slow, but biologically plausible.
+                    // Method from the paper. Slow, but biologically plausible (-ish).
                     //
                     // The Hebbian increment at every timestep is the inputs (i.e. rprev) times the (cubed) fluctuations in activity for each neuron. 
                     // More plausible, but slower and requires a supralinear function to be applied to the fluctuations (here cubing, but sign-preserving square also works)
 
-
-                    // Outer product for computing the hebbian increments
-                    //hebb += rprev * delta_x_cu.transpose();
-
-                    // Same thing, but using simple C arrays to perform computations - massive speedup  
+                    double incr;
                    for (int n1=0; n1 < NBNEUR; n1++)
                         for (int n2=0; n2 < NBNEUR; n2++)
-                            //hebbmat[n1][n2] += rprevmat[n1] * dx2[n2]; //rprev(n1) * delta_x_sq(n2);
-                            hebbmat[n1][n2] += rprev(n1) * delta_x_cu(n2); //rprev(n1) * delta_x_sq(n2);
+                        {
+                            incr = rprev(n1) * delta_x(n2);
+                            hebbmat[n1][n2] +=  incr * incr * incr;
+                        }
 
                 }
-                else if (METHOD == "MODUL")
+                else if (METHOD == "NODEPERT")
                 {
                     // Node-perturbation. 
                     //
                     // The Hebbian increment is the inputs times the
-                    // perturbation itself. Node-perturbation method, identical to 
-                    // Fiete & Seung 2006. Much faster if you use UNIFORM
-                    // perturbations (because you only compute the Hebbian
+                    // perturbation itself. Node-perturbation method, similar to 
+                    // Fiete & Seung 2006. Much faster 
+                    // because you only compute the Hebbian
                     // increments in the few timesteps at which a
-                    // perturbation actually occurs).
-
-                    if (marker != 0)
-                    {
+                    // perturbation actually occurs.
 
 
-                        // Outer product for computing the hebbign increments
-                        //hebb += rprev * modul.transpose();
 
-                        // Same thing, but transferring the values to simple C arrays - massive speedup !
-                        for (int n1=0; n1 < NBNEUR; n1++)
-                            for (int n2=0; n2 < NBNEUR; n2++)
-                                //hebbmat[n1][n2] += rprevmat[n1] * dx2[n2]; //rprev(n1) * delta_x_sq(n2);
-                                hebbmat[n1][n2] += rprev(n1) * modul(n2); //rprev(n1) * delta_x_sq(n2);
+                    for (int n2=0; n2 < NBNEUR; n2++)
+                        if (modulmarker(n2) != 0)
+                            for (int n1=0; n1 < NBNEUR; n1++)
+                                hebbmat[n1][n2] += rprev(n1) * modul(n2); 
 
 
-                    }
                 }
                 else { cout << "Which method??" << endl; return -1; }
             }
@@ -440,7 +367,7 @@ int main(int argc, char* argv[])
 
         }
 
-        int EVALTIME = 300; 
+        int EVALTIME = 200; 
 
         err = rs.row(0) - tgtresps[trialtype].row(0);
         err.head(TRIALTIME - EVALTIME).setZero();
@@ -454,12 +381,10 @@ int main(int argc, char* argv[])
 
 
         if ((PHASE == LEARNING) && (numtrial> 100)
-                // && (numtrial %2 == 1)
            )
         {
-
+            // Note that the weight change is the summed Hebbian increments, multiplied by the mean of recent errors for this trial type - this multiplication may help to stabilize learning.
             dJ = (  -  ETA * meanerrtrace(trialtype) * (hebb.array() * (meanerr - meanerrtrace(trialtype)))).transpose().cwiseMin(MAXDW).cwiseMax(-MAXDW);
-
             J +=  dJ;
 
 
@@ -469,6 +394,8 @@ int main(int argc, char* argv[])
         meanerrtrace(trialtype) = ALPHATRACE * meanerrtrace(trialtype) + (1.0 - ALPHATRACE) * meanerr; 
         meanerrs(numtrial) = meanerr;
 
+
+        // Display stuff, save files.
 
         if (PHASE == LEARNING)
         {
@@ -496,7 +423,8 @@ int main(int argc, char* argv[])
             }
 
 
-            if (numtrial % (NBPATTERNS * 100) <  2*NBPATTERNS)
+            //if (numtrial % (NBPATTERNS * 100) <  2*NBPATTERNS)
+            if (numtrial % 200 <  2*NBPATTERNS)
             {    
                 cout << numtrial << "- trial type: " << trialtype;
                 //cout << ", responses : " << zout;
@@ -591,11 +519,3 @@ void randJ(MatrixXd& J)
         }
 }
 
-/*
-   load rs0.txt; load rs1.txt; load rs2.txt; load rs3.txt;
-   figure; plot(rs0(1:7,:)'); figure; plot(rs1(1:7,:)'); figure; plot(rs2(1:7,:)'); figure; plot(rs3(1:7,:)'); 
-
-   r=load('resp0.txt');
-   figure; plot(r(2:8:end)); hold on; plot(r(3:8:end), 'r'); plot(r(5:8:end), 'g'); plot(r(7:8:end), 'm'); hold off
-
-*/
