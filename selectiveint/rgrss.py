@@ -21,7 +21,7 @@ ion()
 
 
 
-if  2:  # After you run this code the 1st time, you can replace this with 'if 0:' to load pre-digested data from the pkl file, which saves some time
+if  1:  # After you run this code the 1st time, you can replace this with 'if 0:' to load pre-digested data from the pkl file, which saves some time
     print "Loading files..."
     resps = []
     allfnames = glob.glob('rs_*type*.txt') 
@@ -231,7 +231,8 @@ for numgraph in range(4):
                 continue
             # 0 is always the choice dimension. For any graph, the other dimension (modality 1 repres. or modality 2 repres.) is given by int(numgraph/2)
             z, = plot([allpfz[x, 0, numline] for x in range(1, NBTIMESLICES)], [allpfz[x, 1 + int(numgraph/2), numline]  for x in range(1, NBTIMESLICES)],
-                    color = [.5 + 2 * B1, .5 - 2* B1, .5 - 2*abs(B1)] )
+                    #color = [.5 + 2 * B1, .5 - 2* B1, .5 - 2*abs(B1)] )   # when maxbias = .25
+                    color = [.5 +  B1, .5 - B1, .5 - abs(B1)] )    # when maxbias = .5
             #z, = plot([predictedfeatures[x][0] for x in range(2, NBTIMESLICES)], [predictedfeatures[x][1 + int(numgraph/2)]  for x in range(2, NBTIMESLICES)],
             #        color = [.5 + 2 * B1, .5 - 2* B1, .5 - 2*abs(B1)] )
             numline += 1
@@ -239,7 +240,7 @@ for numgraph in range(4):
 
 
     print " " 
-splts[0].legend([linez[0], linez[-1]], ['-0.25' , '0.25'], loc=3, fontsize=10)
+splts[0].legend([linez[0], linez[-1]], ['-0.25' , '0.25'], loc='lower left', fontsize=10)
 tight_layout()
 
 savefig('figure_rgrss.png', bbox_inches='tight', dpi=300)

@@ -60,8 +60,10 @@ for selectstr in selectstrs:
             eee = amax(eee, axis = 1)
             errslist.append(eee)
             
-            # When is criterion reached?
+            # When is criterion reached (95% error < 1.0 in 100 consecutive trials?)
             # Note that we do this after the grouping, so we need to multiply by NBTRIALSPERGROUP.
+            # (This code is very ugly)
+            # NOTE: We are actually returning the point *after which* the previous 100 trials met criterion, rather than the point *from which* the next 100 trials will reach criterion... Not sure if good.
             correctz = uint8(eee<1.0)
             cumul = np.zeros(correctz.shape)
             for nn in range(CRITERIONPERIOD):

@@ -9,10 +9,10 @@ import glob
 
 
 rlist = []
-rlist.append(loadtxt('rs_long_type0_bias1_0.200000_bias2_-0.200000_2.txt')[::10,:])
-rlist.append(loadtxt('rs_long_type1_bias1_0.200000_bias2_-0.200000_2.txt')[::10,:])
-rlist.append(loadtxt('rs_long_type0_bias1_-0.200000_bias2_0.200000_2.txt')[::10,:])
-rlist.append(loadtxt('rs_long_type1_bias1_-0.200000_bias2_0.200000_2.txt')[::10,:])
+rlist.append(loadtxt('rs_long_type0_bias1_0.500000_bias2_-0.500000_2.txt')[::10,:])
+rlist.append(loadtxt('rs_long_type1_bias1_0.500000_bias2_-0.500000_2.txt')[::10,:])
+rlist.append(loadtxt('rs_long_type0_bias1_-0.500000_bias2_0.500000_2.txt')[::10,:])
+rlist.append(loadtxt('rs_long_type1_bias1_-0.500000_bias2_0.500000_2.txt')[::10,:])
 
 rs = dstack(rlist)
 

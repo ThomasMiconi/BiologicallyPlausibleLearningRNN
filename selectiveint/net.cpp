@@ -1,8 +1,18 @@
-// 1 : not too bad, but 0 is a bit high for one...
-// 20 :
+// HOWTO make the figures:
+// 1- just run ./net
+// 2- ./subsmall.sh               # Runs the code with 20 different random seeds. Requires an LSF cluster!
+// 3- python makefigure           # Plots the training error curve, using the median and inter-quartile range across 20 runs
+// 4- Run subtest.sh. This will generate the test output files. Requires cluster!
+// 5- Run plotdetection.py for the psychometric curves
+// 6- Run rgrss.py for the Mante-Sussillo trajectories
+// Note: to run makefigsingle.py, in order to plot the error curve, you need to
+// run ./net with several random seeds (i.e. ./net RNGSEED 0, ./net RNGSEED 1,
+// etc. - as many as you like, but at least more than 3)
+
+
+// Ref: trial-ETA-.01-ALPHAMODUL-30.0-MAXDW-2e-4-ALPHABIAS-.5
 
 // For training, this is like the others:  4 trial types (attend mod1 or mod2, bias of the relevant modality positive or negative [other modality has random-sign bias])
-// Variable, randomly chosen input biases at each trial: ALPHAINPUTBIAS just sets the maximum.
 // For testing, you set BIAS1 and BIAS2 directly; Only 2 trial types (attend mod1 or mod2), 10 trials for each type (20 trials total).
 
 #include <iostream>
@@ -33,29 +43,26 @@ double PROBACONN = 1.0;
 double G = 1.5;
 string METHOD = "DELTAX"; // "DELTAX"; //"DELTATOTALEXC"; //"DXTRIAL";
 string MODULTYPE = "DECOUPLED";
-int RNGSEED = 20;
-
-// DENOM = 1  => There is no smoothing of the sensory inputs, you just get Gaussian noise.
-// DENOM < 1  => The sensory inputs are smoothed by an exponential filter with time constant DENOM.
-double DENOM = 1.0;
+int RNGSEED = 5;
 
 int DEBUG = 0;
 
 double PROBAMODUL = .003;
-double ALPHAMODUL = 16.0;
+double ALPHAMODUL = 30.0;   // I.e. really 1.0, since divided by TAU.
 
-double PROBAHEBB = 1.0;
 
 double ALPHATRACE = .75;
 double ALPHATRACEEXC = 0.05;
 
-double ALPHAINPUTBIAS = 0.5;
 
+double TAUINPUT = 1.0 ;  // Time constant of the inputs. If 1.0, the inputs are pure uncorrelated Gaussian samples (i.e. white noise).
 
-double MAXDW = .003; //.001 also OK, with same other params. // 2e-5 ; //* 1.5;
+double MAXDW = 2e-4;
 double ETA =  .01 ; //.03 ; // * 1.5;  // Learning rate
-double INPUTMULT = 3.0;
+double INPUTMULT = .5;
 
+
+double ALPHABIAS = .5;
 
 double BIAS1 = 100000;
 double BIAS2 = 100000;
@@ -83,18 +90,17 @@ int main(int argc, char* argv[])
            if (strcmp(argv[nn], "MODULTYPE") == 0) { MODULTYPE = argv[nn+1]; }
            if (strcmp(argv[nn], "DEBUG") == 0) { DEBUG = atoi(argv[nn+1]); }
            if (strcmp(argv[nn], "G") == 0) { G = atof(argv[nn+1]); }
-           if (strcmp(argv[nn], "ALPHAINPUTBIAS") == 0) { ALPHAINPUTBIAS = atof(argv[nn+1]);  if (PHASE == TESTING) { std::runtime_error( "In Testing phase, do not specify ALPHAINPUTBIAS!");  } }
            if (strcmp(argv[nn], "ETA") == 0) { ETA = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "TAU") == 0) { tau = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "INPUTMULT") == 0) { INPUTMULT = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "ALPHAMODUL") == 0) { ALPHAMODUL = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "PROBAMODUL") == 0) { PROBAMODUL = atof(argv[nn+1]); }
-           if (strcmp(argv[nn], "PROBAHEBB") == 0) { PROBAHEBB = atof(argv[nn+1]); }
+           if (strcmp(argv[nn], "ALPHABIAS") == 0) { ALPHABIAS = atof(argv[nn+1]); if (PHASE == TESTING) { std::runtime_error( "In Testing phase, do not specify ALPHABIAS!");  }  }
            if (strcmp(argv[nn], "BIAS1") == 0) { BIAS1 = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "BIAS2") == 0) { BIAS2 = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "ALPHATRACE") == 0) { ALPHATRACE = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "ALPHATRACEEXC") == 0) { ALPHATRACEEXC = atof(argv[nn+1]); }
-           if (strcmp(argv[nn], "DENOM") == 0) { DENOM = atof(argv[nn+1]); }
+           if (strcmp(argv[nn], "TAUINPUT") == 0) { TAUINPUT = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "RNGSEED") == 0) { RNGSEED = atof(argv[nn+1]); }
            if (strcmp(argv[nn], "MAXDW") == 0) { MAXDW = atof(argv[nn+1]); }
        }
@@ -108,20 +114,20 @@ int main(int argc, char* argv[])
 
     string SUFFIX = "_G" + to_string(G) + "_MAXDW" + to_string(MAXDW) + "_ETA" + to_string(ETA) + "_ALPHAMODUL" + to_string(ALPHAMODUL) + "_PROBAMODUL" + to_string(PROBAMODUL) 
         + "_MODULTYPE-" + MODULTYPE +   
-         "_ALPHATRACE" + to_string(ALPHATRACE) + "_METHOD-" + METHOD + "_ALPHAINPUTBIAS" + to_string(ALPHAINPUTBIAS) + "_PROBAHEBB" + to_string(PROBAHEBB) + "_ATRACEEXC" + to_string(ALPHATRACEEXC) + "_TAU" + to_string(tau) +
+         "_ALPHATRACE" + to_string(ALPHATRACE) + "_METHOD-" + METHOD +   "_ATRACEEXC" + to_string(ALPHATRACEEXC) + "_TAU" + to_string(tau) +
         "_INPUTMULT" + to_string(INPUTMULT) + 
-        "_DENOM" + to_string(DENOM) + 
+        "_TAUINPUT" + to_string(TAUINPUT) + 
+        "_ALPHABIAS" + to_string(ALPHABIAS) + 
         "_RNGSEED" + to_string(RNGSEED);
     cout << SUFFIX << endl;
 
     myrng.seed(RNGSEED);
     srand(RNGSEED);
 
-double ALPHATRACEINPUT  = 1.0 - (dt / DENOM) ; // If DENOM < 1.0, this implements temporal smoothing of sensory inputs. But we don't use it (i.e. we set DENOM to 1.0).
 
 int trialtype;
 
-    int NBTRIALS =  100401; 
+    int NBTRIALS =  50401; 
     int TRIALTIME = 700;
     int STARTSTIM1 = 1, TIMESTIM1 = 500; 
     //int STARTSTIM2 = 400, TIMESTIM2 = 200; 
@@ -280,8 +286,8 @@ int trialtype;
         double biasmodulator2;
 
 
-        biasmodulator1 = .2;
-        biasmodulator2 = .2;
+        biasmodulator1 = ALPHABIAS;
+        biasmodulator2 = ALPHABIAS;
         
         biasmodality1 *= biasmodulator1 ;
         biasmodality2 *= biasmodulator2 ;
@@ -303,8 +309,10 @@ int trialtype;
             if (numiter >= STARTSTIM1  & numiter <  STARTSTIM1 + TIMESTIM1)
             {
                 // If ALPHATRACEINPUT is non-zero, this implements temporal smoothing of sensory inputs. However, for all experiments we do set it to 0 (see DENOM above).
-                input(1) =  ALPHATRACEINPUT * previnput1 + (1.0-ALPHATRACEINPUT) * .5 * ( Gauss(myrng) + biasmodality1 );
-                input(2) =  ALPHATRACEINPUT * previnput2 + (1.0-ALPHATRACEINPUT) * .5 * ( Gauss(myrng) + biasmodality2 );
+                //input(1) =  ALPHATRACEINPUT * previnput1 + (1.0-ALPHATRACEINPUT) * .5 * ( Gauss(myrng) + biasmodality1 );
+                //input(2) =  ALPHATRACEINPUT * previnput2 + (1.0-ALPHATRACEINPUT) * .5 * ( Gauss(myrng) + biasmodality2 );
+                input(1) = (1.0 - dt / TAUINPUT) * previnput1 + (dt / TAUINPUT) * INPUTMULT * ( Gauss(myrng) + biasmodality1 );
+                input(2) = (1.0 - dt / TAUINPUT) * previnput2 + (dt / TAUINPUT) * INPUTMULT * ( Gauss(myrng) + biasmodality2 );
                 previnput1 = input(1); previnput2 = input(2);
             }
 
@@ -367,7 +375,7 @@ int trialtype;
 
             
 
-                if ((PHASE == LEARNING) && (Uniform(myrng) < PROBAHEBB) 
+                if ((PHASE == LEARNING) 
                         && (numiter> 2) 
                         )
                 {
@@ -455,8 +463,6 @@ int trialtype;
             cout << numtrial << "- trial type: " << trialtype;
             cout << " r[0]: " << r(0);
             cout << endl;
-            //myfile.open("rs_long_type"+std::to_string(trialtype)+"_alphabias"+ std::to_string(ALPHAINPUTBIAS)+ "_"+std::to_string(int(numtrial/NBTRIALTYPES))+".txt", ios::trunc | ios::out);  myfile << endl << rs.transpose() << endl; myfile.close();
-            //myfile.open("lastr_type"+std::to_string(trialtype)+"_alphabias"+ std::to_string(ALPHAINPUTBIAS)+ "_"+std::to_string(int(numtrial/NBTRIALTYPES))+".txt", ios::trunc | ios::out);  myfile << endl << r(0) << endl; myfile.close();
 
             myfile.open("rs_long_type"+std::to_string(trialtype)+"_bias1_"+ std::to_string(BIAS1)+ "_bias2_"+ std::to_string(BIAS2)+ "_"+std::to_string(int(numtrial/ NBTRIALTYPES))+".txt", ios::trunc | ios::out);  myfile << endl << rs.transpose() << endl; myfile.close();
             myfile.open("lastr_type"+std::to_string(trialtype)+"_bias1_"+ std::to_string(BIAS1) + "_bias2_"+ std::to_string(BIAS2)+ "_"+std::to_string(int(numtrial/ NBTRIALTYPES))+".txt", ios::trunc | ios::out);  myfile << endl << r(0) << endl; myfile.close();

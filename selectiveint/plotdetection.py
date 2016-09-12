@@ -77,7 +77,7 @@ if  1:
 # Now mmsX is a list of matrices (one per trial type, i.e. per attended modality), such that each matrix contains the array of results across all possible values of the bias on the Xth modality (X=0 or 1) (one bias value per column) for this trialtype.
 
 xdata = arange(len(unique(allbias2s))) - floor(len(unique(allbias2s))/2.0) 
-xdatanorm = .05 * xdata    # These are the actual x values - cannot use this as xdata because boxplot doesn't seem to like non-integer positions
+xdatanorm = .1 * xdata    # These are the actual x values - cannot use this as xdata because boxplot doesn't seem to like non-integer positions
 
 for nplot in range(4):
 
@@ -107,7 +107,9 @@ for nplot in range(4):
     plot(xdata, sigmo(xdata, popt[0], popt[1], popt[2], popt[3]))
     yticks([-1, 1])
     xticks(xdata[::2], [str(nn) for nn in xdatanorm[::2]])
+    plt.axis([-5.5, 5.5, -1.0, 1.0])
 
+plt.draw()
 tight_layout()
 savefig('figure_detection.png', bbox_inches='tight', dpi=300)
 
