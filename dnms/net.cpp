@@ -22,15 +22,17 @@ void randMat(MatrixXd& m);
 
 
 int NBNEUR = 200;
-int NBIN = 3;  // Input 0 is reserved for a 'go' signal that is not used here.
-int NBOUT = 1;
+int NBIN = 3;  // Number of inputs. Input 0 is reserved for a 'go' signal that is not used here.
+int NBOUT = 1;    // Only 1 output neuron
 double PROBACONN = 1.0;  // Dense connectivity
 double G = 1.5;   // Early chaotic regime. Chaos ma non troppo.
 
 
 
-// For *fast*, but less biologically plausible method (simple node-perturbation
-// method, similar to Fiete & Seung 2006).
+// Here you choose which learning method to use:
+
+// For faster, but less biologically plausible method (simple node-perturbation
+// method, similar to Fiete & Seung 2006), uncomment this:
 // It is faster because you only compute the
 // Hebbian increment on the few timesteps where a perturbation actually
 // occurs.
@@ -39,9 +41,7 @@ string METHOD = "NODEPERT";
 double ETA = .001 ; //  Learning rate
 */
 
-//For slower, but more biologically plausible method (based on detrended
-//post-synaptic activities and nonlinearized Hebbian increments to 'extract'
-//the exploratory perturbations - see http://biorxiv.org/content/early/2016/06/07/057729 :
+//For slower, but more biologically plausible method (as described in the paper, see http://biorxiv.org/content/early/2016/06/07/057729 ):
 string METHOD = "DELTAX"; 
 double ETA = .1;  //  Learning rate
 
@@ -142,10 +142,12 @@ int main(int argc, char* argv[])
     // Remember that input channel 0 is reserved for the (unused) 'go' signal
 
 
+
+
+    // Here we define the inputs to be fed to the network, and the expected response, for each condition.
+
     // For the sequential-XOR problem (NBPATTERNS to 4, TRIALTIME and eval. time as appropriate): 
     // We encode the input patterns as matrices with NBIN rows and TRIALTIME columns, which we fill with the appropriate input values at every time step and for each input channel
-    
-
     patterns[0] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[0].row(1).segment(STARTSTIM1, TIMESTIM1).fill(1.0); patterns[0].row(1).segment(STARTSTIM2, TIMESTIM2).fill(1.0);
     patterns[1] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[1].row(1).segment(STARTSTIM1, TIMESTIM1).fill(1.0); patterns[1].row(2).segment(STARTSTIM2, TIMESTIM2).fill(1.0);
     patterns[2] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[2].row(2).segment(STARTSTIM1, TIMESTIM1).fill(1.0); patterns[2].row(1).segment(STARTSTIM2, TIMESTIM2).fill(1.0);
@@ -161,7 +163,7 @@ int main(int argc, char* argv[])
 
 
     MatrixXd dJ(NBNEUR, NBNEUR); dJ.setZero();
-    MatrixXd win(NBNEUR, NBIN); win.setRandom(); win.row(0).setZero(); // Input weights are uniformly between -1 and 1, except possibly for output cell (not even necessary). No plasticity for input weights.
+    MatrixXd win(NBNEUR, NBIN); win.setRandom(); win.row(0).setZero(); // Input weights are uniformly chosen between -1 and 1, except possibly for output cell (not even necessary). No plasticity for input weights.
 
 
 
@@ -170,6 +172,7 @@ int main(int argc, char* argv[])
 
     randJ(J); // Randomize recurrent weight matrix, according to the Sompolinsky method (Gaussian(0,1), divided by sqrt(ProbaConn*N) and multiplied by G - see definition of randJ() below).
 
+    // If in the TESTING mode, read the weights from a previously saved file:
     if (PHASE == TESTING){
         if (RANDW == 0){
         //readWeights(J, "J.dat");
@@ -205,6 +208,7 @@ int main(int argc, char* argv[])
     MatrixXd dJtmp, Jprev, Jr;
 
 
+    // Auxiliary variables for speeding things up a little bit.
     double hebbmat[NBNEUR][NBNEUR];
     double rprevmat[NBNEUR], dx2[NBNEUR];
     double xmat[NBNEUR], xtracemat[NBNEUR];
@@ -232,7 +236,7 @@ int main(int argc, char* argv[])
         input.setZero();
 
 
-        // Initialization with moderate random noise. Decreases performance a bit, but more realistic.
+        // Initialization of network activity with moderate random noise. Decreases performance a bit, but more realistic.
 
         x.setRandom(); x *= .1; 
         x(1)=1.0; x(10)=1.0;x(11)=-1.0; //x(12) = 1.0;  // Biases
@@ -288,12 +292,15 @@ int main(int argc, char* argv[])
             }
             else { throw std::runtime_error("Which modulation type?"); }
 
+            
+            // Compute network activations
 
             x += dtdivtau * (-x + total_exc);
 
             x(1)=1.0; x(10)=1.0;x(11)=-1.0; //x(12) = 1.0;  // Biases
 
 
+            // Actual responses = tanh(activations)
             for (int nn=0; nn < NBNEUR; nn++)
             {
                 r(nn) = tanh(x(nn));
@@ -302,12 +309,14 @@ int main(int argc, char* argv[])
 
             rs.col(numiter) = r;
 
-            // Compute the fluctuations of neural activity (detrending / high-pass filtering)
+
+            // Okay, now for the actual plasticity.
+
+            // First, compute the fluctuations of neural activity (detrending / high-pass filtering)
             delta_x =  x  - x_trace ;
             //delta_x_sq = delta_x.array() * delta_x.array().abs();
             //delta_x_cu = delta_x.array() * delta_x.array() * delta_x.array();
             x_trace = ALPHATRACEEXC * x_trace + (1.0 - ALPHATRACEEXC) * x;
-
 
             if (DEBUG > 0)
             {
@@ -318,9 +327,7 @@ int main(int argc, char* argv[])
             }
 
 
-
-            // Computing the Hebbian increment for this time step
-
+            // Compute the Hebbian increment to be added to the eligibility trace (i.e. potential weight change) for this time step, based on inputs and fluctuations of neural activity
             if ( (PHASE == LEARNING) 
                     && (numiter> 2) 
                )
@@ -365,12 +372,15 @@ int main(int argc, char* argv[])
             }
 
 
-        }
+        }  // Trial finished!
+
+
+        // Compute error for this trial
 
         int EVALTIME = 200; 
 
         err = rs.row(0) - tgtresps[trialtype].row(0);
-        err.head(TRIALTIME - EVALTIME).setZero();
+        err.head(TRIALTIME - EVALTIME).setZero(); // Error is only computed over the response period, i.e. the last EVALTIME ms.
 
         meanerr =  err.cwiseAbs().sum() / (double)EVALTIME;
 
@@ -380,13 +390,14 @@ int main(int argc, char* argv[])
                 hebb(n1, n2) = hebbmat[n1][n2];
 
 
+        // Compute the actual weight change, based on eligibility trace and the relative error for this trial:
+
         if ((PHASE == LEARNING) && (numtrial> 100)
            )
         {
-            // Note that the weight change is the summed Hebbian increments, multiplied by the mean of recent errors for this trial type - this multiplication may help to stabilize learning.
+            // Note that the weight change is the summed Hebbian increments, multiplied by the relative error, AND the mean of recent errors for this trial type - this last multiplication may help to stabilize learning.
             dJ = (  -  ETA * meanerrtrace(trialtype) * (hebb.array() * (meanerr - meanerrtrace(trialtype)))).transpose().cwiseMin(MAXDW).cwiseMax(-MAXDW);
             J +=  dJ;
-
 
         }
 

@@ -1,6 +1,6 @@
 This is the source code for the preprint ["Biologically plausible learning in recurrent neural networks for flexible decision tasks"](http://biorxiv.org/content/early/2016/06/07/057729).
 
-This code implements a simple, biologically plausible plasticity rule for chaotic recurrent neural networks (RNNs), that can learn nontrivial tasks based solely on delayed, sparse rewards.
+This code implements a simple, biologically plausible plasticity rule for chaotic-regime recurrent neural networks (RNNs), that can learn nontrivial tasks based solely on delayed, sparse rewards.
 
 The source code is in C++ and requires a C++11-compliant compiler. It also
 requires the [Eigen
@@ -18,7 +18,8 @@ preprint](https://arxiv.org/abs/1507.08973)), which is much faster, but less bio
 
 The
 `selectiveint` directory contains the selective attention/integration
-experiment. 
+experiment, based on  [Mante et al. 2013](http://www.nature.com/nature/journal/v503/n7474/abs/nature12742.html). 
+
 
 The `armmodel` directory contains the arm control experiment. 
 
