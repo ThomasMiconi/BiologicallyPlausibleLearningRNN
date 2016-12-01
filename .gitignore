@@ -33,6 +33,7 @@ selectiveint/*
 
 !additionalexperiments
 additionalexperiments/*
+!additionalexperiments/*.md
 
 !additionalexperiments/EInet
 additionalexperiments/EInet/*
