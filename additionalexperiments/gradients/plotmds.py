@@ -43,7 +43,7 @@ matdata += .0 * standard_normal(shape(matdata))
 
 ion()
 
-fgr, sps = subplots(3, 3)
+fgr, sps = subplots(3, 2)
 
 # 8.5cm = 3.3 inches for single column. 6.9 inches for two-column
 #fgr.set_size_inches(3.3, 6)
@@ -51,7 +51,6 @@ fgr, sps = subplots(3, 3)
 #slicetimes= [850, 900, 990, 999] #[200, 600, 900 , 850, 990, 999]
 slicetimes= [199, 599, 799, 999] #[200, 600, 900 , 850, 990, 999]
 
-subplots_adjust(wspace=0, hspace=.25)
 
 for numgraph in range(4):
     
@@ -68,9 +67,9 @@ for numgraph in range(4):
     ax.plot(pos[NBPTS/4:2*NBPTS/4-1, 0], pos[NBPTS/4:2*NBPTS/4-1, 1], 'or', markersize=8)
     ax.plot(pos[2*NBPTS/4:3*NBPTS/4-1, 0], pos[2*NBPTS/4:3*NBPTS/4-1, 1], 'og', markersize=8)
     ax.plot(pos[3*NBPTS/4:NBPTS-1, 0], pos[3*NBPTS/4:NBPTS-1, 1], 'oy', markersize=8)
-    if numgraph==0 or numgraph==2:
+    if numgraph==0:
         ax.set_ylabel('Dimension 2', size=10)
-    if numgraph==2 or numgraph==3:
+    if numgraph==2:
         ax.set_xlabel('Dimension 1', size=10)
     ax.set_xticklabels([])
     ax.set_yticklabels([])
@@ -80,11 +79,8 @@ for numgraph in range(4):
 
 sps[2,0].axis('off')
 sps[2,1].axis('off')
-sps[0,2].axis('off')
-sps[1,2].axis('off')
-sps[2,2].axis('off')
-sps[0,1].legend(['AA','AB', 'BA', 'BB'],  numpoints = 1, ncol= 1, loc=3, prop={'size':10}, bbox_to_anchor=(1.1,-.5))
+sps[1,0].legend(['AA','AB', 'BA', 'BB'],  numpoints = 1, ncol= 2, loc=3, prop={'size':10}, bbox_to_anchor=(.3,-.7))
 savefig('figure_mds.png', bbox_inches='tight', dpi=300)
 
-draw()
+show()
 

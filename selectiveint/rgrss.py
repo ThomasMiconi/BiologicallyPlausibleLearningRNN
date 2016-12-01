@@ -157,6 +157,9 @@ coeffzmax = vstack(coeffzmax).T
 # Like Sussillo, we apply QR decomposition
 qcoeffzmax, r = np.linalg.qr(coeffzmax)
 
+qcoeffzmax[:,0] *= -1  # For some reason QR insists on making the choice dimension negative.
+
+
 # Showing how that the computed regression coefficients can be used for predicting cell activations from regressands / trial features
 #cc = coeffz[:,:,-1]
 #pv = np.dot(cc, regressands[13, :]) + interz[-1]
@@ -240,7 +243,7 @@ for numgraph in range(4):
 
 
     print " " 
-splts[0].legend([linez[0], linez[-1]], ['-0.25' , '0.25'], loc='lower left', fontsize=10)
+splts[0].legend([linez[0], linez[-1]], ['-0.25' , '0.25'], loc='lower right', fontsize=10)
 tight_layout()
 
 savefig('figure_rgrss.png', bbox_inches='tight', dpi=300)

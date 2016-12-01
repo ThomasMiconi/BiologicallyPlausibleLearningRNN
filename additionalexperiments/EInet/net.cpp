@@ -19,6 +19,7 @@ void randJ(MatrixXd& m);
 void randVec(VectorXd & m);
 void randVecGauss(VectorXd & m);
 void randMat(MatrixXd& m);
+double ACTFUNC(double x);
 
 
 int NBNEUR = 200;
@@ -28,6 +29,8 @@ double PROBACONN = 1.0;  // Dense connectivity
 double G = 1.5;   // Early chaotic regime. Chaos ma non troppo.
 
 
+// Best : 
+// errs_G1.500000_MAXDW0.000100_ETA0.000030_ALPHAMODUL16.000000_PROBAMODUL0.003000_SQUARING1_MODULTYPE-DECOUPLED_ALPHATRACE0.750000_METHOD-DELTAX_ATRACEEXC0.050000_TAU30.000000_RNGSE
 
 // Here you choose which learning method to use:
 
@@ -36,21 +39,26 @@ double G = 1.5;   // Early chaotic regime. Chaos ma non troppo.
 // It is faster because you only compute the
 // Hebbian increment on the few timesteps where a perturbation actually
 // occurs.
-/*
-string METHOD = "NODEPERT"; 
-double ETA = .001 ; //  Learning rate
-*/
+
+//string METHOD = "NODEPERT"; 
+//double ETA = .001 ; //  Learning rate
+
+// Constants for the E-I network with Dale's law
+double GINHIB = 1.2;
+double JCONN = .15;
+
 
 //For slower, but more biologically plausible method (as described in the paper, see http://biorxiv.org/content/early/2016/06/07/057729 ):
 string METHOD = "DELTAX"; 
-double ETA = .1;  //  Learning rate
+double ETA = 3e-5;  //  Learning rate
 
+//./net ETA .0001 MAXDW 1e-4 was roughly in the direction of maybe working?
 
 // == PARAMETERS ==
 
 string MODULTYPE = "DECOUPLED"; // Modulations (exploratory perturbations) are applied independently to each neuron.
 double ALPHAMODUL = 16.0;  // Note that TAU = 30ms, so the real ALPHAMODUL is 16.0 * dt / TAU ~= .5
-double MAXDW = 3e-4 ; 
+double MAXDW = 1e-4 ; 
 double PROBAMODUL = .003;
 
 int RNGSEED = 0;
@@ -117,7 +125,7 @@ int main(int argc, char* argv[])
     int trialtype;
 
 
-    int NBTRIALS = 100407; // ~10K trials sufficient to get good convergence (95% correct on a binary criterion is reached within ~1000 trials, but performance keeps improving after that). Should really be 100K if you have time.
+    int NBTRIALS = 30407; // ~10K trials sufficient to get good convergence (95% correct on a binary criterion is reached within ~1000 trials, but performance keeps improving after that). Should really be 100K if you have time.
     int TRIALTIME = 1000;
     int STARTSTIM1 = 1, TIMESTIM1 = 200; 
     int STARTSTIM2 = 400, TIMESTIM2 = 200; 
@@ -154,10 +162,10 @@ int main(int argc, char* argv[])
     patterns[3] = MatrixXd::Zero(NBIN, TRIALTIME); patterns[3].row(2).segment(STARTSTIM1, TIMESTIM1).fill(1.0); patterns[3].row(2).segment(STARTSTIM2, TIMESTIM2).fill(1.0);
 
     // Target responses - what the network ought to produce (note that only the last EVALTIME timesteps are actually relevant - see below)
-    tgtresps[0] = MatrixXd::Zero(1, TRIALTIME); tgtresps[0].fill(-.98);
-    tgtresps[1] = MatrixXd::Zero(1, TRIALTIME); tgtresps[1].fill(.98);
-    tgtresps[2] = MatrixXd::Zero(1, TRIALTIME); tgtresps[2].fill(.98);
-    tgtresps[3] = MatrixXd::Zero(1, TRIALTIME); tgtresps[3].fill(-.98);
+    tgtresps[0] = MatrixXd::Zero(1, TRIALTIME); tgtresps[0].fill(.02);
+    tgtresps[1] = MatrixXd::Zero(1, TRIALTIME); tgtresps[1].fill(5.98);
+    tgtresps[2] = MatrixXd::Zero(1, TRIALTIME); tgtresps[2].fill(5.98);
+    tgtresps[3] = MatrixXd::Zero(1, TRIALTIME); tgtresps[3].fill(.02);
 
 
 
@@ -170,8 +178,8 @@ int main(int argc, char* argv[])
     MatrixXd J(NBNEUR, NBNEUR);
 
 
-    cout << Uniform(myrng) << endl;
     randJ(J); // Randomize recurrent weight matrix, according to the Sompolinsky method (Gaussian(0,1), divided by sqrt(ProbaConn*N) and multiplied by G - see definition of randJ() below).
+
 
     // If in the TESTING mode, read the weights from a previously saved file:
     if (PHASE == TESTING){
@@ -222,8 +230,6 @@ int main(int argc, char* argv[])
 
 
 
-    // OK, let's start the experiment:
-
     for (int numtrial=0; numtrial < NBTRIALS; numtrial++)
     {
 
@@ -244,10 +250,9 @@ int main(int argc, char* argv[])
         x.setRandom(); x *= .1; 
         x(1)=1.0; x(10)=1.0;x(11)=-1.0; //x(12) = 1.0;  // Biases
         for (int nn=0; nn < NBNEUR; nn++)
-            r(nn) = tanh(x(nn));
+            r(nn) = ACTFUNC(x(nn));
 
 
-        // Let's start the trial:
         for (int numiter=0; numiter < TRIALTIME;  numiter++)
         {
 
@@ -304,10 +309,10 @@ int main(int argc, char* argv[])
             x(1)=1.0; x(10)=1.0;x(11)=-1.0; //x(12) = 1.0;  // Biases
 
 
-            // Actual responses = tanh(activations)
+            // Actual responses 
             for (int nn=0; nn < NBNEUR; nn++)
             {
-                r(nn) = tanh(x(nn));
+                r(nn) = ACTFUNC(x(nn));
             }
 
 
@@ -331,7 +336,6 @@ int main(int argc, char* argv[])
             }
 
 
-            double dfg = Uniform(myrng);
             // Compute the Hebbian increment to be added to the eligibility trace (i.e. potential weight change) for this time step, based on inputs and fluctuations of neural activity
             if ( (PHASE == LEARNING) 
                     && (numiter> 2) 
@@ -343,14 +347,6 @@ int main(int argc, char* argv[])
                     //
                     // The Hebbian increment at every timestep is the inputs (i.e. rprev) times the (cubed) fluctuations in activity for each neuron. 
                     // More plausible, but slower and requires a supralinear function to be applied to the fluctuations (here cubing, but sign-preserving square also works)
-
-                    // An alternative is to cube the delta_x, and
-                    // multiply them by raw rprev. This would be a bit faster (reduce
-                    // the number of cubings), but seems
-                    // slightly less plausible. Also, it does not seem to make
-                    // much difference in final perfi, although it seems to
-                    // make gradients somewhat more similar to those obtained
-                    // by backprop.
 
                     double incr;
                    for (int n1=0; n1 < NBNEUR; n1++)
@@ -412,6 +408,9 @@ int main(int argc, char* argv[])
             dJ = (  -  ETA * meanerrtrace(trialtype) * (hebb.array() * (meanerr - meanerrtrace(trialtype)))).transpose().cwiseMin(MAXDW).cwiseMax(-MAXDW);
             J +=  dJ;
 
+            J.leftCols(NBNEUR/2) = J.leftCols(NBNEUR/2).cwiseMax(0);
+            J.rightCols(NBNEUR/2) = J.rightCols(NBNEUR/2).cwiseMin(0);
+
         }
 
 
@@ -428,6 +427,7 @@ int main(int argc, char* argv[])
                 //myfile.open("rs"+std::to_string((numtrial/2)%4)+".txt", ios::trunc | ios::out);  myfile << endl << rs.transpose() << endl; myfile.close();
                 //myfile.open("rs"+std::to_string(trialtype)+".txt", ios::trunc | ios::out);  myfile << endl << rs.transpose() << endl; myfile.close();
 
+                myfile.open("rs"+std::to_string(trialtype)+".txt", ios::trunc | ios::out);  myfile << endl << rs.transpose() << endl; myfile.close();
                 //myfile.open("rs"+std::to_string(numtrial % 3000)+".txt", ios::trunc | ios::out);  myfile << endl << rs.transpose() << endl; myfile.close();
             }
             if ((numtrial % 1000 == 0) || (numtrial == NBTRIALS -1))
@@ -530,8 +530,46 @@ void randMat(MatrixXd& M)
     for (int nn = 0; nn < M.size(); nn++)
         M.data()[nn] = -1.0 + 2.0 * Uniform(myrng);
 }
+double ACTFUNC(double x)
+{
+    double GAMMA = 2.0;
+    double MAXVAL = 20.0;
+    if (x < -GAMMA)
+        return 0;
+    if (x > MAXVAL - GAMMA)
+        return MAXVAL;
+    return x + GAMMA;
+
+}
 
 void randJ(MatrixXd& J)
+{
+    double z; int otherpos;
+    J.setZero();
+    J.leftCols(NBNEUR/4).fill(1.0);
+    J.rightCols(NBNEUR/2).leftCols(NBNEUR/4).fill(-1.0 * GINHIB);
+    for (int rr=0; rr < J.rows(); rr++)
+    {
+        for (int cc=0; cc < NBNEUR / 2; cc++)
+        {
+            otherpos = (int)(Uniform(myrng)*NBNEUR/2);
+            z = J(rr,otherpos);
+            J(rr, otherpos) = J(rr,cc);
+            J(rr, cc) = z;
+        }
+        for (int cc=NBNEUR/2; cc < NBNEUR; cc++)
+        {
+            otherpos = (int)(Uniform(myrng)*NBNEUR/2) + NBNEUR/2;
+            z = J(rr,otherpos);
+            J(rr, otherpos) = J(rr,cc);
+            J(rr, cc) = z;
+        }
+    }
+    J *= JCONN;
+    //cout << J << endl;
+}
+
+void randJprev(MatrixXd& J)
 {
     for (int rr=0; rr < J.rows(); rr++)
         for (int cc=0; cc < J.cols(); cc++)

@@ -1,3 +1,7 @@
+// Best :
+// errs_G1.500000_MAXDW0.000100_ETA0.030000_ALPHAMODUL16.000000_PROBAMODUL0.100000_SQUARING1_MODULTYPE-DECOUPLED_ALPHATRACE0.750000_METHOD-DELTAX_ATRACEEXC0.050000_TAU30.000000_RNGSE*
+// median crit time 2230 (q25 1366 q75 4573)
+
 #include <iostream>
 #include <stdexcept>
 #include <fstream>
@@ -43,8 +47,7 @@ double ETA = .001 ; //  Learning rate
 
 //For slower, but more biologically plausible method (as described in the paper, see http://biorxiv.org/content/early/2016/06/07/057729 ):
 string METHOD = "DELTAX"; 
-double ETA = .1;  //  Learning rate
-
+double ETA = .03;  //  Learning rate
 
 // == PARAMETERS ==
 
@@ -117,14 +120,30 @@ int main(int argc, char* argv[])
     int trialtype;
 
 
-    int NBTRIALS = 100407; // ~10K trials sufficient to get good convergence (95% correct on a binary criterion is reached within ~1000 trials, but performance keeps improving after that). Should really be 100K if you have time.
+    int NBTRIALS = 30407; // ~10K trials sufficient to get good convergence (95% correct on a binary criterion is reached within ~1000 trials, but performance keeps improving after that). Should really be 100K if you have time.
+    
+    
+    // 1 secon delay. Works, with node-perturbation, and ETA .0001
+    // Also works within ~5K trials with the full algo, with ETA .01 and MAXDW 5e-5 ! May work with ETA .03 / MAXDW 5e-5. Also works with ETA .003, MAXDW unchanged.
+    int TRIALTIME = 2000;
+    int STARTSTIM1 = 1, TIMESTIM1 = 400; 
+    int STARTSTIM2 = 1400, TIMESTIM2 = 400; 
+    int EVALTIME = 200; 
+
+    // 500 ms delay. Works ! At least with node-perturbation (not sure with algo itself) !
+    /*
+    int TRIALTIME = 1300;
+    int STARTSTIM1 = 1, TIMESTIM1 = 300; 
+    int STARTSTIM2 = 800, TIMESTIM2 = 300; 
+    int EVALTIME = 200; 
+    */
+/*
+Original : 200 ms delay
     int TRIALTIME = 1000;
     int STARTSTIM1 = 1, TIMESTIM1 = 200; 
     int STARTSTIM2 = 400, TIMESTIM2 = 200; 
-    /*int TRIALTIME = 1000;
-      int STARTSTIM1 = 1, TIMESTIM1 = 200; // 200
-      int STARTSTIM2 = 400, TIMESTIM2 = 200; */
-
+    int EVALTIME = 200; 
+*/
     VectorXi modulmarker(NBNEUR); modulmarker.setZero();
 
     if (PHASE == TESTING) 
@@ -170,7 +189,6 @@ int main(int argc, char* argv[])
     MatrixXd J(NBNEUR, NBNEUR);
 
 
-    cout << Uniform(myrng) << endl;
     randJ(J); // Randomize recurrent weight matrix, according to the Sompolinsky method (Gaussian(0,1), divided by sqrt(ProbaConn*N) and multiplied by G - see definition of randJ() below).
 
     // If in the TESTING mode, read the weights from a previously saved file:
@@ -222,8 +240,6 @@ int main(int argc, char* argv[])
 
 
 
-    // OK, let's start the experiment:
-
     for (int numtrial=0; numtrial < NBTRIALS; numtrial++)
     {
 
@@ -247,7 +263,6 @@ int main(int argc, char* argv[])
             r(nn) = tanh(x(nn));
 
 
-        // Let's start the trial:
         for (int numiter=0; numiter < TRIALTIME;  numiter++)
         {
 
@@ -331,7 +346,6 @@ int main(int argc, char* argv[])
             }
 
 
-            double dfg = Uniform(myrng);
             // Compute the Hebbian increment to be added to the eligibility trace (i.e. potential weight change) for this time step, based on inputs and fluctuations of neural activity
             if ( (PHASE == LEARNING) 
                     && (numiter> 2) 
@@ -343,14 +357,6 @@ int main(int argc, char* argv[])
                     //
                     // The Hebbian increment at every timestep is the inputs (i.e. rprev) times the (cubed) fluctuations in activity for each neuron. 
                     // More plausible, but slower and requires a supralinear function to be applied to the fluctuations (here cubing, but sign-preserving square also works)
-
-                    // An alternative is to cube the delta_x, and
-                    // multiply them by raw rprev. This would be a bit faster (reduce
-                    // the number of cubings), but seems
-                    // slightly less plausible. Also, it does not seem to make
-                    // much difference in final perfi, although it seems to
-                    // make gradients somewhat more similar to those obtained
-                    // by backprop.
 
                     double incr;
                    for (int n1=0; n1 < NBNEUR; n1++)
@@ -390,7 +396,6 @@ int main(int argc, char* argv[])
 
         // Compute error for this trial
 
-        int EVALTIME = 200; 
 
         err = rs.row(0) - tgtresps[trialtype].row(0);
         err.head(TRIALTIME - EVALTIME).setZero(); // Error is only computed over the response period, i.e. the last EVALTIME ms.
