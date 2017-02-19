@@ -1,4 +1,5 @@
 // Task: Simple logistic regression of a single neuron with random inputs, must determine whether the mean of inputs is positive or not.
+// Strictly feedforward. The paper uses netFF for the gradients figure, but this is used to generate the data for makefigrelax.py (the relaxation figure)
 // No learning actually occurs, we just want to see the gradients.
 
 
