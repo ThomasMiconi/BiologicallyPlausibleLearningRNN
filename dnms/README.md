@@ -1,7 +1,7 @@
-This is the code for the delayed nonmatch-to-sample task, as described in http://biorxiv.org/content/early/2016/06/07/057729.
+This is the code for the delayed nonmatch-to-sample task, as described in https://elifesciences.org/articles/20899.
 The main source code is in `net.cpp`. Python files generate test data and plot figures, while shell scripts are mostly concerned with job submission to a computational cluster.
 
-`net.cpp` implements the method described in http://biorxiv.org/content/early/2016/06/07/057729. However, it also contains (commented-out) code for for the
+`net.cpp` implements the method described in https://elifesciences.org/articles/20899 and http://biorxiv.org/content/early/2016/06/07/057729. However, it also contains (commented-out) code for for the
 faster, but less biologically plausible node-perturbation method (Fiete & Seung
 2006 - see also http://arxiv.org/abs/1507.08973, which the present code supersedes).
 
